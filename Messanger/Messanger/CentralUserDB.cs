@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Helper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,16 +7,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UserNamespace;
+using static Helper.HelperClass;
 namespace DataBank
 {
     public class CentralUserDB
     {
         private SqliteConnection connection;
+        HelperClass helper = new HelperClass();
+        UserFunctions userFunction = new UserFunctions();
         public CentralUserDB()
         {
-            
 
-            string dbPath = Path.Combine(CreateFolder("CentralUserDB"), "clientdata.db");
+            
+            string dbPath = Path.Combine(helper.CreateFolder("CentralUserDB"), "clientdata.db");
             connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
 
@@ -28,9 +32,9 @@ namespace DataBank
             );", connection);
             cmd.ExecuteNonQuery();
         }
-        public void RegisterUser(string username, string email, DateTime dateOfBirth, string password)
+        public void RegisterUser(User user)
         {
-            if (UserExists(username))
+            if (UserExists(user.username))
             {
                 Console.WriteLine("Benutzer existiert schon");
                 return;
@@ -39,29 +43,16 @@ namespace DataBank
                 "INSERT INTO UserData (UserName, PasswordHash, PasswordSalt) VALUES (@u, @p, @s)",
                 connection
             );
-            var (hash, salt) = HashPassword(password);
-            insertCmd.Parameters.AddWithValue("@u", username);
+            var (hash, salt) = HashPassword(user.password);
+            insertCmd.Parameters.AddWithValue("@u", user.username);
             insertCmd.Parameters.AddWithValue("@p", hash);
             insertCmd.Parameters.AddWithValue("@s", salt);
             insertCmd.ExecuteNonQuery();
             using var idCmd = new SqliteCommand("SELECT last_insert_rowid();", connection);
             long userId = (long)idCmd.ExecuteScalar();
-            CreateUserDb(userId);
-            TestRegistration(username);
-        }
-        public void CreateUserDb(long userId)
-        {
-            string userDbPath = Path.Combine(CreateFolder("ClientsDB\\" + userId), userId + "userdata.db");
-            using var userConnection = new SqliteConnection($"Data Source={userDbPath}");
-            userConnection.Open();
-            using var cmd = new SqliteCommand(@"
-            CREATE TABLE IF NOT EXISTS Contacts(
-            ContactId INTEGER PRIMARY KEY AUTOINCREMENT,
-            ContactName TEXT NOT NULL,
-            ContactStatus TEXT
-            );", userConnection);
-            cmd.ExecuteNonQuery();
-            //Console.WriteLine($"User-DB für User {userId} erstellt unter: {userDbPath}");
+            user.userId = userId.ToString();
+            userFunction.CreateUserDb(user);
+            TestRegistration(user.username);
         }
         public void TestRegistration(string username)
         {
@@ -84,20 +75,6 @@ namespace DataBank
             {
                 Console.WriteLine("Benutzer wurde NICHT in der Datenbank gefunden!");
             }
-        }
-        public string CreateFolder(string path)
-        {
-            string folderPath = "C:\\Users\\elial\\source\\repos\\MessangerC-\\Messanger\\" + path;
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-                Console.WriteLine("Ordner erstellt: " + folderPath);
-            }
-            else
-            {
-                Console.WriteLine("Ordner existiert bereits: " + folderPath);
-            }
-            return folderPath;
         }
         public bool UserExists(string username)
         {
