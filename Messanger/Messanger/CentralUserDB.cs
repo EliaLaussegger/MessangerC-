@@ -22,7 +22,7 @@ namespace DataBank
             using var cmd = new SqliteCommand(@"
             CREATE TABLE IF NOT EXISTS UserData(
             UserId INTEGER PRIMARY KEY AUTOINCREMENT,
-            UserAccounts TEXT NOT NULL UNIQUE,
+            UserName TEXT NOT NULL UNIQUE,
             PasswordHash TEXT NOT NULL,
             PasswordSalt TEXT NOT NULL
             );", connection);
@@ -36,7 +36,7 @@ namespace DataBank
                 return;
             }
             using var insertCmd = new SqliteCommand(
-                "INSERT INTO UserData (UserAccounts, PasswordHash, PasswordSalt) VALUES (@u, @p, @s)",
+                "INSERT INTO UserData (UserName, PasswordHash, PasswordSalt) VALUES (@u, @p, @s)",
                 connection
             );
             var (hash, salt) = HashPassword(password);
@@ -46,14 +46,27 @@ namespace DataBank
             insertCmd.ExecuteNonQuery();
             using var idCmd = new SqliteCommand("SELECT last_insert_rowid();", connection);
             long userId = (long)idCmd.ExecuteScalar();
-
+            CreateUserDb(userId);
             TestRegistration(username);
-
+        }
+        public void CreateUserDb(long userId)
+        {
+            string userDbPath = Path.Combine(CreateFolder("ClientsDB\\" + userId), userId + "userdata.db");
+            using var userConnection = new SqliteConnection($"Data Source={userDbPath}");
+            userConnection.Open();
+            using var cmd = new SqliteCommand(@"
+            CREATE TABLE IF NOT EXISTS Contacts(
+            ContactId INTEGER PRIMARY KEY AUTOINCREMENT,
+            ContactName TEXT NOT NULL,
+            ContactStatus TEXT
+            );", userConnection);
+            cmd.ExecuteNonQuery();
+            //Console.WriteLine($"User-DB für User {userId} erstellt unter: {userDbPath}");
         }
         public void TestRegistration(string username)
         {
             using var testCmd = new SqliteCommand(
-                "SELECT UserId, UserAccounts FROM UserData WHERE UserAccounts = @u",
+                "SELECT UserId, UserName FROM UserData WHERE UserName = @u",
                 connection
             );
 
@@ -89,7 +102,7 @@ namespace DataBank
         public bool UserExists(string username)
         {
             using var checkCmd = new SqliteCommand(
-                "SELECT COUNT(*) FROM UserData WHERE UserAccounts = @u",
+                "SELECT COUNT(*) FROM UserData WHERE UserName = @u",
                 connection
             );
             checkCmd.Parameters.AddWithValue("@u", username);

@@ -12,8 +12,8 @@ class Program
         var server = new Server(4);
         server.ConnectToDatabase();
         CentralUserDB centralUserDB = new CentralUserDB();
-        centralUserDB.RegisterUser("MaxMustermann", "ajflajl", new DateTime(1990, 1, 1), "user123", "password");
-        centralUserDB.RegisterUser("MaxMustermann2", "ajflajl", new DateTime(1990, 1, 1), "user123", "password");
+        centralUserDB.RegisterUser("MaxMustermann", "ajflajl", new DateTime(1990, 1, 1), "password");
+        centralUserDB.RegisterUser("MaxMustermann2", "ajflajl", new DateTime(1990, 1, 1), "password");
 
     }
 }
