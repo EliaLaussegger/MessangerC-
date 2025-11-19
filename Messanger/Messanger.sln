@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messanger", "Messanger\Messanger.csproj", "{3F7D0C39-D580-44A7-B778-5C77E3EC5A78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{84D27F74-D2BA-6C25-2661-968F101900D9}"
+	ProjectSection(SolutionItems) = preProject
+		Observer.cs = Observer.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F7D0C39-D580-44A7-B778-5C77E3EC5A78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7D0C39-D580-44A7-B778-5C77E3EC5A78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7D0C39-D580-44A7-B778-5C77E3EC5A78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7D0C39-D580-44A7-B778-5C77E3EC5A78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A4883B4-E53A-4BFF-9512-111DB3D84CBC}
+	EndGlobalSection
+EndGlobal
