@@ -13,17 +13,9 @@ namespace DataBank
         private SqliteConnection connection;
         public CentralUserDB()
         {
-            string folderPath = "C:\\Users\\elial\\source\\repos\\MessangerC-\\Messanger\\CentralUserDB";
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-                Console.WriteLine("Ordner erstellt: " + folderPath);
-            }
-            else
-            {
-                Console.WriteLine("Ordner existiert bereits: " + folderPath);
-            }
-            string dbPath = Path.Combine(folderPath, "clientdata.db");
+            
+
+            string dbPath = Path.Combine(CreateFolder("CentralUserDB"), "clientdata.db");
             connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
 
@@ -36,7 +28,7 @@ namespace DataBank
             );", connection);
             cmd.ExecuteNonQuery();
         }
-        public void RegisterUser(string username, string email, DateTime dateOfBirth, string userId, string password)
+        public void RegisterUser(string username, string email, DateTime dateOfBirth, string password)
         {
             if (UserExists(username))
             {
@@ -52,6 +44,9 @@ namespace DataBank
             insertCmd.Parameters.AddWithValue("@p", hash);
             insertCmd.Parameters.AddWithValue("@s", salt);
             insertCmd.ExecuteNonQuery();
+            using var idCmd = new SqliteCommand("SELECT last_insert_rowid();", connection);
+            long userId = (long)idCmd.ExecuteScalar();
+
             TestRegistration(username);
 
         }
@@ -76,6 +71,20 @@ namespace DataBank
             {
                 Console.WriteLine("Benutzer wurde NICHT in der Datenbank gefunden!");
             }
+        }
+        public string CreateFolder(string path)
+        {
+            string folderPath = "C:\\Users\\elial\\source\\repos\\MessangerC-\\Messanger\\" + path;
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+                Console.WriteLine("Ordner erstellt: " + folderPath);
+            }
+            else
+            {
+                Console.WriteLine("Ordner existiert bereits: " + folderPath);
+            }
+            return folderPath;
         }
         public bool UserExists(string username)
         {

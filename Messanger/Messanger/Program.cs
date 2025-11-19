@@ -13,6 +13,7 @@ class Program
         server.ConnectToDatabase();
         CentralUserDB centralUserDB = new CentralUserDB();
         centralUserDB.RegisterUser("MaxMustermann", "ajflajl", new DateTime(1990, 1, 1), "user123", "password");
+        centralUserDB.RegisterUser("MaxMustermann2", "ajflajl", new DateTime(1990, 1, 1), "user123", "password");
 
     }
 }
