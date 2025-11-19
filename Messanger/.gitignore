@@ -4,6 +4,6 @@
 # Rider user specific files
 .idea
 
-/CentralUserDB/
+*.db
 *.sqlite
 *.sqlite3
