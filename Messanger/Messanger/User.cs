@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Helper;
+using DataBank;
 namespace UserNamespace
 {
     public class User
     {
-
+        public bool loggedIn { get; private set; }
         public string username { get; set; }
         public string userId { get; set; }
         public string password { get; private set; }
@@ -41,6 +42,23 @@ namespace UserNamespace
             );", userConnection);
             cmd.ExecuteNonQuery();
             //Console.WriteLine($"User-DB für User {userId} erstellt unter: {userDbPath}");
+        }
+        public User CreateUser()
+        {
+            Console.WriteLine("Enter name");
+            string nameInput = Console.ReadLine();
+            Console.WriteLine("Enter email");
+            string emailInput = Console.ReadLine();
+            Console.WriteLine("Enter date of birth (yyyy-MM-dd)");
+            string dobInput = Console.ReadLine();
+            DateTime dob = DateTime.Parse(dobInput);
+            Console.WriteLine("Enter password");
+            string passwordInput = Console.ReadLine();
+            User newUser = new User(nameInput, emailInput, dob, passwordInput);
+            CentralUserDB centralUserDB = new CentralUserDB();
+
+            centralUserDB.RegisterUser(newUser);
+            return newUser;
         }
     }
 }
