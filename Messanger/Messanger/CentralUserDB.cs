@@ -54,6 +54,10 @@ namespace DataBank
             userFunction.CreateUserDb(user);
             TestRegistration(user.username);
         }
+        public void Login(string username, string password)
+        {
+
+        }
         public void TestRegistration(string username)
         {
             using var testCmd = new SqliteCommand(
@@ -86,6 +90,23 @@ namespace DataBank
 
             long count = (long)checkCmd.ExecuteScalar();
             return count > 0;
+        }
+        public string GetUserId(string username)
+        {
+            using var idCmd = new SqliteCommand(
+                "SELECT UserId FROM UserData WHERE UserName = @u",
+                connection
+            );
+            idCmd.Parameters.AddWithValue("@u", username);
+            using var reader = idCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetInt32(0).ToString();
+            }
+            else
+            {
+                return null;
+            }
         }
         public static (string hash, string salt) HashPassword(string password)
         {
