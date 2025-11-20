@@ -41,6 +41,15 @@ namespace UserNamespace
             ContactDateOfBirth TEXT
             );", userConnection);
             cmd.ExecuteNonQuery();
+            using var insertCmd = new SqliteCommand(
+                "INSERT INTO Contacts (ContactName, ContactEmail, ContactDateOfBirth,ContactId) VALUES (@n, @e, @d,@i)",
+                userConnection
+            );
+            insertCmd.Parameters.AddWithValue("@n", user.username);
+            insertCmd.Parameters.AddWithValue("@e", user.email);
+            insertCmd.Parameters.AddWithValue("@d", user.dateOfBirth);
+            insertCmd.Parameters.AddWithValue("@i", user.userId);
+            insertCmd.ExecuteNonQuery();
             //Console.WriteLine($"User-DB für User {userId} erstellt unter: {userDbPath}");
         }
         public User CreateUser()
