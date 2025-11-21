@@ -54,9 +54,36 @@ namespace DataBank
             userFunction.CreateUserDb(user);
             TestRegistration(user.username);
         }
-        public void Login(string username, string password)
+        public bool Login(string username, string password)
         {
-
+            string userSalt = GetUserSalt(username);
+            if (VerifyPassword(password, GetPasswordHash(username), userSalt))
+            {
+                return true;
+                Console.WriteLine("Login erfolgreich!");
+            }
+            else
+            {
+                return false;
+                Console.WriteLine("Login fehlgeschlagen!");
+            }
+        }
+        public string GetPasswordHash(string username)
+        {
+            using var hashCmd = new SqliteCommand(
+                "SELECT PasswordHash FROM UserData WHERE UserName = @u",
+                connection
+            );
+            hashCmd.Parameters.AddWithValue("@u", username);
+            using var reader = hashCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+            else
+            {
+                return null;
+            }
         }
         public void TestRegistration(string username)
         {
@@ -108,6 +135,23 @@ namespace DataBank
                 return null;
             }
         }
+        public string GetUserSalt(string username)
+        {
+            using var saltCmd = new SqliteCommand(
+                "SELECT PasswordSalt FROM UserData WHERE UserName = @u",
+                connection
+            );
+            saltCmd.Parameters.AddWithValue("@u", username);
+            using var reader = saltCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+            else
+            {
+                return null;
+            }
+        }   
         public static (string hash, string salt) HashPassword(string password)
         {
             byte[] saltBytes = RandomNumberGenerator.GetBytes(16);
