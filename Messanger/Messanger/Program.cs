@@ -15,7 +15,7 @@ class Program
         CentralUserDB centralUserDB = new CentralUserDB();
         //User user = userFunction.CreateUser();
         //centralUserDB.TestRegistration(user.username);
-        Console.WriteLine(userFunction.LoginUser());
+        User loggedInUser = userFunction.LoginUser();
 
     }
 }

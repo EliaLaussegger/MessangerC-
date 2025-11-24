@@ -23,6 +23,10 @@ namespace UserNamespace
             this.dateOfBirth = dateOfBirth;
             this.password = password;
         }
+        public void SetLoggedIn(bool status)
+        {
+            loggedIn = status;
+        }
 
     }
     public class UserFunctions
@@ -69,14 +73,26 @@ namespace UserNamespace
             centralUserDB.RegisterUser(newUser);
             return newUser;
         }
-        public bool LoginUser()
+        public User LoginUser()
         {
             Console.WriteLine("Enter username");
             string usernameInput = Console.ReadLine();
             Console.WriteLine("Enter password");
             string passwordInput = Console.ReadLine();
             CentralUserDB centralUserDB = new CentralUserDB();
-            return centralUserDB.Login(usernameInput, passwordInput);
+            if (centralUserDB.Login(usernameInput, passwordInput))
+            {
+                Console.WriteLine("Login successful");
+                User user = new User(usernameInput, "", DateTime.Now, passwordInput);
+                user.userId = centralUserDB.GetUserId(usernameInput);
+                user.SetLoggedIn(true);
+                return user;
+            }
+            else
+            {
+                Console.WriteLine("Login failed");
+                return null;
+            }
         }
     }
 }
