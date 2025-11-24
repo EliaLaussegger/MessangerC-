@@ -13,8 +13,9 @@ class Program
         var server = new Server(4);
         server.ConnectToDatabase();
         CentralUserDB centralUserDB = new CentralUserDB();
-        User user = userFunction.CreateUser();
-        centralUserDB.TestRegistration(user.username);
+        //User user = userFunction.CreateUser();
+        //centralUserDB.TestRegistration(user.username);
+        Console.WriteLine(userFunction.LoginUser());
 
     }
 }

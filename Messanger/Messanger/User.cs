@@ -69,14 +69,14 @@ namespace UserNamespace
             centralUserDB.RegisterUser(newUser);
             return newUser;
         }
-        public void LoginUser()
+        public bool LoginUser()
         {
             Console.WriteLine("Enter username");
             string usernameInput = Console.ReadLine();
             Console.WriteLine("Enter password");
             string passwordInput = Console.ReadLine();
             CentralUserDB centralUserDB = new CentralUserDB();
-            centralUserDB.Login(usernameInput, passwordInput);
+            return centralUserDB.Login(usernameInput, passwordInput);
         }
     }
 }
