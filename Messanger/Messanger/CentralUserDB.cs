@@ -13,13 +13,12 @@ namespace DataBank
     public class CentralUserDB
     {
         private SqliteConnection connection;
-        HelperClass helper = new HelperClass();
         UserFunctions userFunction = new UserFunctions();
         public CentralUserDB()
         {
 
             
-            string dbPath = Path.Combine(helper.CreateFolder("CentralUserDB"), "clientdata.db");
+            string dbPath = Path.Combine(CreateFolder("CentralUserDB"), "clientdata.db");
             connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
 

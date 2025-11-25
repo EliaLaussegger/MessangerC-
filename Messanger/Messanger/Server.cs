@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Delegates;
+using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
-using Microsoft.Data.Sqlite;
-using Delegates;
 namespace ServerNamespace
 {
     class Server
@@ -20,9 +22,11 @@ namespace ServerNamespace
         {
             _threadPool.QueueWorkItem(requestHandler);
         }
-        public void ConnectToDatabase()
+        public void Connect()
         {
-           
+            TcpListener listener = new TcpListener(IPAddress.Any, 5000);
+            listener.Start();
+            TcpClient client = listener.AcceptTcpClient();
         }
     }
 }

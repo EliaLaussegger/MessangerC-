@@ -53,7 +53,6 @@ namespace ObserverNamespace
             Console.WriteLine(request.user.username + " logged in.");
             this.request = request;
             return this;
-
         }
     }
 

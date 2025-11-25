@@ -13,7 +13,7 @@ class Program
 
 
         var server = new Server(4);
-        server.ConnectToDatabase();
+        server.Connect();
 
 
         UserFunctions userFunction = new UserFunctions();

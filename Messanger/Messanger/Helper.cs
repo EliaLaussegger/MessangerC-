@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Helper
 {
-    public class HelperClass
+    public static class HelperClass
     {
-        public string CreateFolder(string path)
+        public static string CreateFolder(string path)
         {
             string folderPath = "C:\\Users\\elial\\source\\repos\\MessangerC-\\Messanger\\" + path;
             if (!Directory.Exists(folderPath))
