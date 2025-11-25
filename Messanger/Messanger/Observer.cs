@@ -6,40 +6,34 @@ using System.Threading.Tasks;
 using Delegates;
 namespace ObserverNamespace
 {
-    interface IObserver
+    public interface IObserver<T> where T : IRequest
     {
-        public IRequest type { get; set; }
-        void Update(IRequest request);
+        void Update(T request);
     }
     class ClientRequestHandler
     {
-        private readonly List<IObserver> _observers = new List<IObserver>();
-        public void RegisterObserver(IObserver observer)
+        private readonly List<object> _observers = new List<object>();
+        public void RegisterObserver<T>(IObserver<T> observer) where T : IRequest
         {
             _observers.Add(observer);
         }
-        public void UnregisterObserver(IObserver observer)
+        public void UnregisterObserver<T>(IObserver<T> observer) where T : IRequest
         {
             _observers.Remove(observer);
         }
-        public void NotifyObservers(IRequest request)
+        public void NotifyObservers<T>(T request) where T : IRequest
         {
-            foreach (var observer in _observers)
+            foreach (var observer in _observers.OfType<IObserver<T>>())
             {
-                
                 observer.Update(request);
             }
         }
     }
-    class ClientConnect : IObserver
+    class ClientConnect : IObserver<ClientConnectRequest>
     {
-        public IRequest type { get; set; } = new ClientRequest();
-        public void Update(IRequest request)
+        public void Update(ClientConnectRequest request)
         {
-            if (request is ClientRequest)
-            {
-                Console.WriteLine("Client connected.");
-            }
+            Console.WriteLine("Client connected.");
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Delegates
     {
         void Execute();
     }
-    class ClientRequest : IRequest
+    class ClientConnectRequest : IRequest
     {
         public void Execute()
         {

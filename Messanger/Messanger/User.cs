@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Helper;
 using DataBank;
+using Delegates;
 namespace UserNamespace
 {
     public class User

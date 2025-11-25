@@ -9,11 +9,15 @@ class Program
     {
         var handler = new ClientRequestHandler();
         handler.RegisterObserver(new ClientConnect());
-        UserFunctions userFunction = new UserFunctions();
+
+
         var server = new Server(4);
         server.ConnectToDatabase();
+
+
+        UserFunctions userFunction = new UserFunctions();
         CentralUserDB centralUserDB = new CentralUserDB();
-        handler.NotifyObservers(new ClientRequest());
+        handler.NotifyObservers(new ClientConnectRequest());
         //User user = userFunction.CreateUser();
         //centralUserDB.TestRegistration(user.username);
         User loggedInUser = userFunction.LoginUser();
