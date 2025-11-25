@@ -8,6 +8,7 @@ namespace ObserverNamespace
 {
     interface IObserver
     {
+        public IRequest type { get; set; }
         void Update(IRequest request);
     }
     class ClientRequestHandler
@@ -25,15 +26,20 @@ namespace ObserverNamespace
         {
             foreach (var observer in _observers)
             {
+                
                 observer.Update(request);
             }
         }
     }
     class ClientConnect : IObserver
     {
+        public IRequest type { get; set; } = new ClientRequest();
         public void Update(IRequest request)
         {
-            Console.WriteLine("Client tries Connect");
+            if (request is ClientRequest)
+            {
+                Console.WriteLine("Client connected.");
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ServerNamespace
         {
             _threadPool = new ThreadPoolNamespace.ThreadPool(workerCount);
         }
-        public void HandleClientRequest(Delegate requestHandler)
+        public void HandleClientRequest(IDelegate requestHandler)
         {
             _threadPool.QueueWorkItem(requestHandler);
         }

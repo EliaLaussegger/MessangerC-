@@ -1,6 +1,7 @@
-﻿using ObserverNamespace;
+﻿using DataBank;
+using Delegates;
+using ObserverNamespace;
 using ServerNamespace;
-using DataBank;
 using UserNamespace;
 class Program
 {
@@ -9,10 +10,10 @@ class Program
         var handler = new ClientRequestHandler();
         handler.RegisterObserver(new ClientConnect());
         UserFunctions userFunction = new UserFunctions();
-        handler.NotifyObservers();
         var server = new Server(4);
         server.ConnectToDatabase();
         CentralUserDB centralUserDB = new CentralUserDB();
+        handler.NotifyObservers(new ClientRequest());
         //User user = userFunction.CreateUser();
         //centralUserDB.TestRegistration(user.username);
         User loggedInUser = userFunction.LoginUser();

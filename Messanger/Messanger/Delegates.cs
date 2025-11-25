@@ -15,4 +15,11 @@ namespace Delegates
     {
         void Execute();
     }
+    class ClientRequest : IRequest
+    {
+        public void Execute()
+        {
+            Console.WriteLine("Client Request Executed");
+        }
+    }
 }
