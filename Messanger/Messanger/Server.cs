@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
 using Microsoft.Data.Sqlite;
-
+using Delegates;
 namespace ServerNamespace
 {
     class Server
@@ -16,7 +16,7 @@ namespace ServerNamespace
         {
             _threadPool = new ThreadPoolNamespace.ThreadPool(workerCount);
         }
-        public void HandleClientRequest(Action requestHandler)
+        public void HandleClientRequest(Delegate requestHandler)
         {
             _threadPool.QueueWorkItem(requestHandler);
         }
@@ -24,6 +24,5 @@ namespace ServerNamespace
         {
            
         }
-
     }
 }

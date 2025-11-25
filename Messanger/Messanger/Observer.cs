@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Delegates;
 namespace ObserverNamespace
 {
     interface IObserver
     {
-        void Update(Action request);
+        void Update(IRequest request);
     }
     class ClientRequestHandler
     {
@@ -21,7 +21,7 @@ namespace ObserverNamespace
         {
             _observers.Remove(observer);
         }
-        public void NotifyObservers(Action request)
+        public void NotifyObservers(IRequest request)
         {
             foreach (var observer in _observers)
             {
@@ -31,7 +31,7 @@ namespace ObserverNamespace
     }
     class ClientConnect : IObserver
     {
-        public void Update(Action request)
+        public void Update(IRequest request)
         {
             Console.WriteLine("Client tries Connect");
         }

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Delegates;
 namespace ThreadPoolNamespace
 {
     public class ThreadPool
     {
         private readonly List<Thread> workers;
         private readonly object _lock = new object();
-        private readonly Queue<Action> _taskQueue = new Queue<Action>();
+        private readonly Queue<IDelegate> _taskQueue = new Queue<IDelegate>();
         private bool _running = true;
         public ThreadPool(int workerCount)
         {
@@ -24,7 +24,7 @@ namespace ThreadPoolNamespace
                 workers.Add(t);
             }
         }
-        public void QueueWorkItem(Action task)
+        public void QueueWorkItem(IDelegate task)
         {
             lock (_lock)
             {
@@ -36,7 +36,7 @@ namespace ThreadPoolNamespace
         {
             while (true)
             {
-                Action? task = null;
+                IDelegate? task = null;
 
                 lock (_lock)
                 {

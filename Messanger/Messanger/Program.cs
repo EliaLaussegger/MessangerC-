@@ -9,7 +9,7 @@ class Program
         var handler = new ClientRequestHandler();
         handler.RegisterObserver(new ClientConnect());
         UserFunctions userFunction = new UserFunctions();
-        handler.NotifyObservers(() => Console.WriteLine("Request ausgeführt"));
+        handler.NotifyObservers();
         var server = new Server(4);
         server.ConnectToDatabase();
         CentralUserDB centralUserDB = new CentralUserDB();
