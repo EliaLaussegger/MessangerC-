@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Delegates;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Delegates;
+using UserNamespace;
 namespace ObserverNamespace
 {
     public interface IObserver<T> where T : IRequest
     {
-        void Update(T request);
+        IObserver<T> Update(T request);
     }
     class ClientRequestHandler
     {
@@ -21,19 +22,39 @@ namespace ObserverNamespace
         {
             _observers.Remove(observer);
         }
-        public void NotifyObservers<T>(T request) where T : IRequest
+        public List<IObserver<T>> NotifyObservers<T>(T request) where T : IRequest
         {
+            List<IObserver<T>> notifiedObservers = new List<IObserver<T>>();
             foreach (var observer in _observers.OfType<IObserver<T>>())
             {
-                observer.Update(request);
+                IObserver<T> o = observer.Update(request);
+                if (o != null)
+                {
+                    notifiedObservers.Add(o);
+                }
             }
+            return notifiedObservers;
         }
     }
     class ClientConnect : IObserver<ClientConnectRequest>
     {
-        public void Update(ClientConnectRequest request)
+        public IObserver<ClientConnectRequest> Update(ClientConnectRequest request)
         {
             Console.WriteLine("Client connected.");
+            return this;
         }
     }
+    class ClientLogin : IObserver<ClientLoginRequest>
+    {
+        public ClientLoginRequest request { get; protected set; }
+        public IObserver<ClientLoginRequest> Update(ClientLoginRequest request)
+        {
+            request.Execute();
+            Console.WriteLine(request.user.username + " logged in.");
+            this.request = request;
+            return this;
+
+        }
+    }
+
 }
