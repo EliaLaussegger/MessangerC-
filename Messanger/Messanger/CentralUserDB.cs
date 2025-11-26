@@ -13,7 +13,6 @@ namespace DataBank
     public class CentralUserDB
     {
         private SqliteConnection connection;
-        UserFunctions userFunction = new UserFunctions();
         public CentralUserDB()
         {
 
@@ -50,7 +49,7 @@ namespace DataBank
             using var idCmd = new SqliteCommand("SELECT last_insert_rowid();", connection);
             long userId = (long)idCmd.ExecuteScalar();
             user.userId = userId.ToString();
-            userFunction.CreateUserDb(user);
+            UserFunctions.CreateUserDb(user);
             TestRegistration(user.username);
         }
         public bool Login(string username, string password)
