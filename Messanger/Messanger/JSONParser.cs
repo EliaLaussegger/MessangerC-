@@ -37,4 +37,26 @@ namespace JsonParser
             }
         }
     }
+    public class MessageSerializable : IJSONSerializable
+    {
+        public string SenderId { get; set; }
+        public string ReceiverId { get; set; }
+        public string Content { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ToJSON()
+        {
+            return System.Text.Json.JsonSerializer.Serialize(this);
+        }
+        public void FromJSON(string json)
+        {
+            var obj = System.Text.Json.JsonSerializer.Deserialize<MessageSerializable>(json);
+            if (obj != null)
+            {
+                this.SenderId = obj.SenderId;
+                this.ReceiverId = obj.ReceiverId;
+                this.Content = obj.Content;
+                this.Timestamp = obj.Timestamp;
+            }
+        }
+    }
 }
