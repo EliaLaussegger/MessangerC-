@@ -24,9 +24,9 @@ namespace ServerNamespace
         }
         public void Connect()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 5000);
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
+            //TcpListener listener = new TcpListener(IPAddress.Any, 5000);
+            //listener.Start();
+            //TcpClient client = listener.AcceptTcpClient();
         }
     }
 }

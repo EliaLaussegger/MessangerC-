@@ -12,7 +12,7 @@ namespace DataBank
 {
     public class CentralUserDB
     {
-        private SqliteConnection connection;
+        public SqliteConnection connection { get; private set; }
         public CentralUserDB()
         {
 
@@ -32,7 +32,7 @@ namespace DataBank
         }
         public void RegisterUser(User user)
         {
-            if (UserExists(user.username))
+            if (DataBaseHelper.UserExists(user.username, this))
             {
                 Console.WriteLine("Benutzer existiert schon");
                 return;
@@ -41,7 +41,7 @@ namespace DataBank
                 "INSERT INTO UserData (UserName, PasswordHash, PasswordSalt) VALUES (@u, @p, @s)",
                 connection
             );
-            var (hash, salt) = HashPassword(user.password);
+            var (hash, salt) = DataBaseHelper.HashPassword(user.password);
             insertCmd.Parameters.AddWithValue("@u", user.username);
             insertCmd.Parameters.AddWithValue("@p", hash);
             insertCmd.Parameters.AddWithValue("@s", salt);
@@ -54,8 +54,8 @@ namespace DataBank
         }
         public bool Login(string username, string password)
         {
-            string userSalt = GetUserSalt(username);
-            if (VerifyPassword(password, GetPasswordHash(username), userSalt))
+            string userSalt = DataBaseHelper.GetUserSalt(username, this);
+            if (DataBaseHelper.VerifyPassword(password, DataBaseHelper.GetPasswordHash(username, this), userSalt))
             {
                 return true;
                 Console.WriteLine("Login erfolgreich!");
@@ -64,23 +64,6 @@ namespace DataBank
             {
                 return false;
                 Console.WriteLine("Login fehlgeschlagen!");
-            }
-        }
-        public string GetPasswordHash(string username)
-        {
-            using var hashCmd = new SqliteCommand(
-                "SELECT PasswordHash FROM UserData WHERE UserName = @u",
-                connection
-            );
-            hashCmd.Parameters.AddWithValue("@u", username);
-            using var reader = hashCmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString(0);
-            }
-            else
-            {
-                return null;
             }
         }
         public void TestRegistration(string username)
@@ -105,51 +88,10 @@ namespace DataBank
                 Console.WriteLine("Benutzer wurde NICHT in der Datenbank gefunden!");
             }
         }
-        public bool UserExists(string username)
-        {
-            using var checkCmd = new SqliteCommand(
-                "SELECT COUNT(*) FROM UserData WHERE UserName = @u",
-                connection
-            );
-            checkCmd.Parameters.AddWithValue("@u", username);
 
-            long count = (long)checkCmd.ExecuteScalar();
-            return count > 0;
-        }
-        public string GetUserId(string username)
-        {
-            using var idCmd = new SqliteCommand(
-                "SELECT UserId FROM UserData WHERE UserName = @u",
-                connection
-            );
-            idCmd.Parameters.AddWithValue("@u", username);
-            using var reader = idCmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetInt32(0).ToString();
-            }
-            else
-            {
-                return null;
-            }
-        }
-        public string GetUserSalt(string username)
-        {
-            using var saltCmd = new SqliteCommand(
-                "SELECT PasswordSalt FROM UserData WHERE UserName = @u",
-                connection
-            );
-            saltCmd.Parameters.AddWithValue("@u", username);
-            using var reader = saltCmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString(0);
-            }
-            else
-            {
-                return null;
-            }
-        }   
+    }
+    public static class DataBaseHelper
+    {
         public static (string hash, string salt) HashPassword(string password)
         {
             byte[] saltBytes = RandomNumberGenerator.GetBytes(16);
@@ -164,5 +106,68 @@ namespace DataBank
 
             return Convert.ToBase64String(hashBytes) == storedHash;
         }
+        public static string GetPasswordHash(string username, CentralUserDB centralUserDB)
+        {
+            using var hashCmd = new SqliteCommand(
+                "SELECT PasswordHash FROM UserData WHERE UserName = @u",
+                centralUserDB.connection
+            );
+            hashCmd.Parameters.AddWithValue("@u", username);
+            using var reader = hashCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static bool UserExists(string username, CentralUserDB centralUserDB)
+        {
+            using var checkCmd = new SqliteCommand(
+                "SELECT COUNT(*) FROM UserData WHERE UserName = @u",
+                centralUserDB.connection
+            );
+            checkCmd.Parameters.AddWithValue("@u", username);
+
+            long count = (long)checkCmd.ExecuteScalar();
+            return count > 0;
+        }
+        public static string GetUserId(string username, CentralUserDB centralUserDB)
+        {
+            using var idCmd = new SqliteCommand(
+                "SELECT UserId FROM UserData WHERE UserName = @u",
+                centralUserDB.connection
+            );
+            idCmd.Parameters.AddWithValue("@u", username);
+            using var reader = idCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetInt32(0).ToString();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static string GetUserSalt(string username, CentralUserDB centralUserDB)
+        {
+            using var saltCmd = new SqliteCommand(
+                "SELECT PasswordSalt FROM UserData WHERE UserName = @u",
+                centralUserDB.connection
+            );
+            saltCmd.Parameters.AddWithValue("@u", username);
+            using var reader = saltCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
+
 }

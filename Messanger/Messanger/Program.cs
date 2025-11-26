@@ -26,6 +26,7 @@ class Program
         List<ObserverNamespace.IObserver<ClientLoginRequest>> updatedObservers = handler.NotifyObservers(clientLoginRequest);
 
         // Beispiel: ersten Observer
+        //ClientRegisterObserver clientLogin = (ClientRegisterObserver)updatedObservers[0];
         ClientLoginObserver clientLogin = (ClientLoginObserver)updatedObservers[0];
         User loggedInUser = clientLogin.request.user;
 

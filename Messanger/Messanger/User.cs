@@ -85,7 +85,7 @@ namespace UserNamespace
             {
                 Console.WriteLine("Login successful");
                 User user = new User(usernameInput, "", DateTime.Now, passwordInput);
-                user.userId = centralUserDB.GetUserId(usernameInput);
+                user.userId = DataBaseHelper.GetUserId(usernameInput, centralUserDB);
                 user.SetLoggedIn(true);
                 return user;
             }
