@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Helper;
 using DataBank;
 using Delegates;
+
 namespace UserNamespace
 {
     public class User
@@ -30,12 +31,11 @@ namespace UserNamespace
         }
 
     }
-    public class UserFunctions
+    public static class UserFunctions
     {
-        HelperClass helper = new HelperClass();
-        public void CreateUserDb(User user)
+        public static void CreateUserDb(User user)
         {
-            string userDbPath = Path.Combine(helper.CreateFolder("ClientsDB\\" + user.userId), user.userId + "userdata.db");
+            string userDbPath = Path.Combine(HelperClass.CreateFolder("ClientsDB\\" + user.userId), user.userId + "userdata.db");
             using var userConnection = new SqliteConnection($"Data Source={userDbPath}");
             userConnection.Open();
             using var cmd = new SqliteCommand(@"
@@ -57,7 +57,7 @@ namespace UserNamespace
             insertCmd.ExecuteNonQuery();
             //Console.WriteLine($"User-DB für User {userId} erstellt unter: {userDbPath}");
         }
-        public User CreateUser()
+        public static User CreateUser()
         {
             Console.WriteLine("Enter name");
             string nameInput = Console.ReadLine();
@@ -74,7 +74,7 @@ namespace UserNamespace
             centralUserDB.RegisterUser(newUser);
             return newUser;
         }
-        public User LoginUser()
+        public static User LoginUser()
         {
             Console.WriteLine("Enter username");
             string usernameInput = Console.ReadLine();

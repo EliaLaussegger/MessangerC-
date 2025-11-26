@@ -28,11 +28,17 @@ namespace Delegates
         public User user { get; protected set; }
         public void Execute()
         {
-            UserFunctions userFunction = new UserFunctions();
-            user = userFunction.LoginUser();
+            user = UserFunctions.LoginUser();
 
 
         }
     }
-
+    class ClientRegisterRequest : IRequest
+    {
+        public User user { get; protected set; }
+        public void Execute()
+        {
+            user = UserFunctions.CreateUser();
+        }
+    }
 }

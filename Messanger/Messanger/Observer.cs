@@ -44,13 +44,24 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientLogin : IObserver<ClientLoginRequest>
+    class ClientLoginObserver : IObserver<ClientLoginRequest>
     {
         public ClientLoginRequest request { get; protected set; }
         public IObserver<ClientLoginRequest> Update(ClientLoginRequest request)
         {
             request.Execute();
             Console.WriteLine(request.user.username + " logged in.");
+            this.request = request;
+            return this;
+        }
+    }
+    class ClientRegisterObserver: IObserver<ClientRegisterRequest>
+    {
+        public ClientRegisterRequest request { get; protected set; }
+
+        public IObserver<ClientRegisterRequest> Update(ClientRegisterRequest request)
+        {
+            request.Execute();
             this.request = request;
             return this;
         }
