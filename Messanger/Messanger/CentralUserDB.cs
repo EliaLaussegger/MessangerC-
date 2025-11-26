@@ -10,7 +10,11 @@ using UserNamespace;
 using static Helper.HelperClass;
 namespace DataBank
 {
-    public class CentralUserDB
+    public interface IDatabase
+    {
+        public SqliteConnection connection { get; }
+    }
+    public class CentralUserDB : IDatabase
     {
         public SqliteConnection connection { get; private set; }
         public CentralUserDB()
@@ -169,5 +173,50 @@ namespace DataBank
             }
         }
     }
+    public class MessageRepository : IDatabase
+    {
+        public SqliteConnection connection { get;  set; }
+        public MessageRepository(string userId)
+        {
+            //string dbPath = Path.Combine(HelperClass.CreateFolder("ClientsDB\\" + userId), userId + "messagedata.db");
+        }
+        public void RegisterNewMessage()
+        {
 
+        }
+    }
+    public class MessageDataBase
+    {
+        public string SenderId { get; set; }
+        public string ReceiverId { get; set; }
+        public string Content { get; set; }
+        public DateTime Timestamp { get; set; }
+        //public MessageDataBase(string senderId, string receiverId, string content)
+        //{
+        //    SenderId = senderId;
+        //    ReceiverId = receiverId;
+        //    Content = content;
+        //    Timestamp = DateTime.UtcNow;
+        //}
+        public MessageDataBase(string senderId, string receiverId, string content, MessageRepository messageDataBase)
+        {
+            SenderId = senderId;
+            ReceiverId = receiverId;
+            Content = content;
+            Timestamp = DateTime.UtcNow;
+            string folder = HelperClass.CreateFolder($"ClientsDB\\{senderId}\\messages");
+            string dbPath = Path.Combine(folder, $"{senderId}messagedata.db");
+            messageDataBase.connection = new SqliteConnection($"Data Source={dbPath}");
+            messageDataBase.connection.Open();
+            using var cmd = new SqliteCommand(@"
+            CREATE TABLE IF NOT EXISTS Messages(
+            MessageId INTEGER PRIMARY KEY AUTOINCREMENT,
+            SenderId TEXT NOT NULL,
+            ReceiverId TEXT NOT NULL,
+            Content TEXT NOT NULL,
+            Timestamp TEXT NOT NULL
+            );", messageDataBase.connection);
+            cmd.ExecuteNonQuery();
+        }
+    }
 }
