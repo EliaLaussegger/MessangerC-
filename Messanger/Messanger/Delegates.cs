@@ -7,7 +7,7 @@ using UserNamespace;
 using DataBank;
 namespace Delegates
 {
-
+    public interface IServerEvent : IRequest { }
     public interface IDelegate
     {
         void Invoke();

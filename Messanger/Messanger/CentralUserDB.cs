@@ -203,9 +203,9 @@ namespace DataBank
         {
             connection.Close();
         }
-        public MessageDataBase FindMessage(string senderId)
+        public MessageDataBase FindMessage(string content)
         {
-            return repositoryList.Find(m => m.senderId == senderId);
+            return repositoryList.Find(m => m.content == content);
         }
     }
         

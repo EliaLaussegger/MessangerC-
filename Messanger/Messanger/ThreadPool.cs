@@ -10,7 +10,7 @@ namespace ThreadPoolNamespace
     {
         private readonly List<Thread> workers;
         private readonly object _lock = new object();
-        private readonly Queue<IDelegate> _taskQueue = new Queue<IDelegate>();
+        private readonly Queue<IRequest> _taskQueue = new Queue<IRequest>();
         private bool _running = true;
         public ThreadPool(int workerCount)
         {
@@ -24,7 +24,7 @@ namespace ThreadPoolNamespace
                 workers.Add(t);
             }
         }
-        public void QueueWorkItem(IDelegate task)
+        public void QueueWorkItem(IRequest task)
         {
             lock (_lock)
             {
@@ -36,7 +36,7 @@ namespace ThreadPoolNamespace
         {
             while (true)
             {
-                IDelegate? task = null;
+                IRequest? task = null;
 
                 lock (_lock)
                 {
@@ -51,7 +51,7 @@ namespace ThreadPoolNamespace
 
                 try
                 {
-                    task?.Invoke();
+                    task?.Execute();
                 }
                 catch (Exception ex)
                 {

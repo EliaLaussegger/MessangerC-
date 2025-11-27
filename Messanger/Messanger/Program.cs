@@ -13,8 +13,8 @@ class Program
         handler.RegisterObserver(new ClientRegisterObserver());
 
 
-        var server = new Server(4);
-        server.Connect();
+        //var server = new Server(4);
+        //server.Connect();
 
 
         CentralUserDB centralUserDB = new CentralUserDB();
@@ -24,6 +24,7 @@ class Program
         ClientLoginRequest clientLoginRequest = new ClientLoginRequest();
         ClientRegisterRequest clientRegisterRequest = new ClientRegisterRequest();
         List<ObserverNamespace.IObserver<ClientLoginRequest>> updatedObservers = handler.NotifyObservers(clientLoginRequest);
+        //List<ObserverNamespace.IObserver<ClientRegisterRequest>> updatedObservers = handler.NotifyObservers(clientRegisterRequest);
 
         // Beispiel: ersten Observer
         //ClientRegisterObserver clientLogin = (ClientRegisterObserver)updatedObservers[0];
