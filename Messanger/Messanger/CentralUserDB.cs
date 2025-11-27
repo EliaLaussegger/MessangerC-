@@ -15,6 +15,10 @@ namespace DataBank
     {
         public SqliteConnection connection { get; }
     }
+    public interface IRepository<T> where T : IDatabase
+    {
+         List<T> repositoryList {get;}
+    }
     public class CentralUserDB : IDatabase
     {
         public SqliteConnection connection { get; private set; }
@@ -174,42 +178,43 @@ namespace DataBank
             }
         }
     }
-    public class MessageRepository : IDatabase
+    public class MessageRepository : IRepository<MessageDataBase>
     {
         public SqliteConnection connection { get; set; }
-        private List<Message> messages = new List<Message>();
+        List<MessageDataBase> repositoryList { get; set; }
         public MessageRepository()
         {
             //string dbPath = Path.Combine(HelperClass.CreateFolder("ClientsDB\\" + userId), userId + "messagedata.db");
         }
         public void RegisterNewMessage(Message message)
         {
-            MessageDataBase messageDataBase = new MessageDataBase(message, this);
-            messages.Add(message);
+            MessageDataBase messageDataBase = new MessageDataBase(message);
+            repositoryList.Add(messageDataBase);
         }
-        public List<Message> GetAllMessages()
+        public List<MessageDataBase> GetAllMessages()
         {
-            return messages;
+            return repositoryList;
         }
         public void ClearMessages()
         {
-            messages.Clear();
+            repositoryList.Clear();
         }
         public void CloseConnection()
         {
             connection.Close();
         }
-        public Message FindMessage(string senderId)
+        public MessageDataBase FindMessage(string senderId)
         {
-            return messages.Find(m => m.senderId == senderId);
+            return repositoryList.Find(m => m.senderId == senderId);
         }
     }
         
-    public class MessageDataBase
+    public class MessageDataBase : IDatabase
     {
-        public string SenderId { get; set; }
-        public string ReceiverId { get; set; }
-        public string Content { get; set; }
+        public SqliteConnection connection { get; set; }
+        public string senderId { get; set; }
+        public string receiverId { get; set; }
+        public string content { get; set; }
         public DateTime Timestamp { get; set; }
         //public MessageDataBase(string senderId, string receiverId, string content)
         //{
@@ -218,16 +223,16 @@ namespace DataBank
         //    Content = content;
         //    Timestamp = DateTime.UtcNow;
         //}
-        public MessageDataBase(Message message, MessageRepository messageDataBase)
+        public MessageDataBase(Message message)
         {
-            SenderId = message.senderId;
-            ReceiverId = message.receiverId;
-            Content = message.content;
+            senderId = message.senderId;
+            receiverId = message.receiverId;
+            content = message.content;
             Timestamp = DateTime.UtcNow;
             string folder = HelperClass.CreateFolder($"ClientsDB\\{message.senderId}\\messages");
             string dbPath = Path.Combine(folder, $"{message.senderId}messagedata.db");
-            messageDataBase.connection = new SqliteConnection($"Data Source={dbPath}");
-            messageDataBase.connection.Open();
+            connection = new SqliteConnection($"Data Source={dbPath}");
+            connection.Open();
             using var cmd = new SqliteCommand(@"
             CREATE TABLE IF NOT EXISTS Messages(
             MessageId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -235,7 +240,7 @@ namespace DataBank
             ReceiverId TEXT NOT NULL,
             Content TEXT NOT NULL,
             Timestamp TEXT NOT NULL
-            );", messageDataBase.connection);
+            );", connection);
             cmd.ExecuteNonQuery();
         }
     }

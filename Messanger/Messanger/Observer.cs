@@ -11,6 +11,10 @@ namespace ObserverNamespace
     {
         IObserver<T> Update(T request);
     }
+    public class Observer<T> where T : IRequest
+    {
+        public T request { get; protected set; }
+    }
     class ClientRequestHandler
     {
         private readonly List<object> _observers = new List<object>();
@@ -36,7 +40,7 @@ namespace ObserverNamespace
             return notifiedObservers;
         }
     }
-    class ClientConnect : IObserver<ClientConnectRequest>
+    class ClientConnect : Observer<ClientConnectRequest>, IObserver<ClientConnectRequest>
     {
         public IObserver<ClientConnectRequest> Update(ClientConnectRequest request)
         {
@@ -44,9 +48,8 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientLoginObserver : IObserver<ClientLoginRequest>
+    class ClientLoginObserver : Observer<ClientLoginRequest>, IObserver<ClientLoginRequest>
     {
-        public ClientLoginRequest request { get; protected set; }
         public IObserver<ClientLoginRequest> Update(ClientLoginRequest request)
         {
             request.Execute();
@@ -55,9 +58,8 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientRegisterObserver: IObserver<ClientRegisterRequest>
+    class ClientRegisterObserver : Observer<ClientRegisterRequest>, IObserver<ClientRegisterRequest>
     {
-        public ClientRegisterRequest request { get; protected set; }
 
         public IObserver<ClientRegisterRequest> Update(ClientRegisterRequest request)
         {
