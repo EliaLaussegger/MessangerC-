@@ -181,7 +181,7 @@ namespace DataBank
     public class MessageRepository : IRepository<MessageDataBase>
     {
         public SqliteConnection connection { get; set; }
-        List<MessageDataBase> repositoryList { get; set; }
+        public List<MessageDataBase> repositoryList { get; private set; } = new List<MessageDataBase>();
         public MessageRepository()
         {
             //string dbPath = Path.Combine(HelperClass.CreateFolder("ClientsDB\\" + userId), userId + "messagedata.db");
