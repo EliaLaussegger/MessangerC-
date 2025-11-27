@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserNamespace;
 using static Helper.HelperClass;
+using MessagesNameSpace;
 namespace DataBank
 {
     public interface IDatabase
@@ -175,16 +176,35 @@ namespace DataBank
     }
     public class MessageRepository : IDatabase
     {
-        public SqliteConnection connection { get;  set; }
-        public MessageRepository(string userId)
+        public SqliteConnection connection { get; set; }
+        private List<Message> messages = new List<Message>();
+        public MessageRepository()
         {
             //string dbPath = Path.Combine(HelperClass.CreateFolder("ClientsDB\\" + userId), userId + "messagedata.db");
         }
-        public void RegisterNewMessage()
+        public void RegisterNewMessage(Message message)
         {
-
+            MessageDataBase messageDataBase = new MessageDataBase(message, this);
+            messages.Add(message);
+        }
+        public List<Message> GetAllMessages()
+        {
+            return messages;
+        }
+        public void ClearMessages()
+        {
+            messages.Clear();
+        }
+        public void CloseConnection()
+        {
+            connection.Close();
+        }
+        public Message FindMessage(string senderId)
+        {
+            return messages.Find(m => m.senderId == senderId);
         }
     }
+        
     public class MessageDataBase
     {
         public string SenderId { get; set; }
@@ -198,14 +218,14 @@ namespace DataBank
         //    Content = content;
         //    Timestamp = DateTime.UtcNow;
         //}
-        public MessageDataBase(string senderId, string receiverId, string content, MessageRepository messageDataBase)
+        public MessageDataBase(Message message, MessageRepository messageDataBase)
         {
-            SenderId = senderId;
-            ReceiverId = receiverId;
-            Content = content;
+            SenderId = message.senderId;
+            ReceiverId = message.receiverId;
+            Content = message.content;
             Timestamp = DateTime.UtcNow;
-            string folder = HelperClass.CreateFolder($"ClientsDB\\{senderId}\\messages");
-            string dbPath = Path.Combine(folder, $"{senderId}messagedata.db");
+            string folder = HelperClass.CreateFolder($"ClientsDB\\{message.senderId}\\messages");
+            string dbPath = Path.Combine(folder, $"{message.senderId}messagedata.db");
             messageDataBase.connection = new SqliteConnection($"Data Source={dbPath}");
             messageDataBase.connection.Open();
             using var cmd = new SqliteCommand(@"
