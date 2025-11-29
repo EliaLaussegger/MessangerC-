@@ -53,6 +53,8 @@ namespace ServerNamespace
     {
         private readonly TcpClient _client;
         private readonly ClientRequestHandler _handler;
+        public string json { get; set; }
+
 
         public ClientTCPConnectedRequest(TcpClient client, ClientRequestHandler handler)
         {
@@ -83,18 +85,24 @@ namespace ServerNamespace
             using var doc = JsonDocument.Parse(json);
             string type = doc.RootElement.GetProperty("type").GetString()!;
 
-            return type switch
+            IRequest? request = type switch
             {
                 "login" => JsonSerializer.Deserialize<ClientLoginRequest>(json),
                 "register" => JsonSerializer.Deserialize<ClientRegisterRequest>(json),
                 "connect" => JsonSerializer.Deserialize<ClientConnectRequest>(json),
                 _ => null
             };
+
+            if (request != null)
+                request.json = json;
+
+            return request;
         }
     }
     class ServerConnectRequest : IRequest
     {
-         
+        public string json { get; set; }
+
         public void Execute()
         {
             Console.WriteLine("Server connected.");

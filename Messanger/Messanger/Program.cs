@@ -24,13 +24,13 @@ class Program
 
         server.Start(3000);
 
-        var client = new TcpJsonClient("127.0.0.1", 3000);
+        //var client = new TcpJsonClient("127.0.0.1", 3000);
 
-        client.SendRequest(new LoginSendModel
-        {
-            username = "Max",
-            password = "1234"
-        });
+        //client.SendRequest(new LoginSendModel
+        //{
+        //    username = "Pauli",
+        //    password = "1234"
+        //});
         Console.ReadLine();
 
         //CentralUserDB centralUserDB = new CentralUserDB();

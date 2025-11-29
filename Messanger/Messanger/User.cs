@@ -74,18 +74,14 @@ namespace UserNamespace
             centralUserDB.RegisterUser(newUser);
             return newUser;
         }
-        public static User LoginUser()
+        public static User LoginUser(string username, string password)
         {
-            Console.WriteLine("Enter username");
-            string usernameInput = Console.ReadLine();
-            Console.WriteLine("Enter password");
-            string passwordInput = Console.ReadLine();
             CentralUserDB centralUserDB = new CentralUserDB();
-            if (centralUserDB.Login(usernameInput, passwordInput))
+            if (centralUserDB.Login(username, password))
             {
                 Console.WriteLine("Login successful");
-                User user = new User(usernameInput, "", DateTime.Now, passwordInput);
-                user.userId = DataBaseHelper.GetUserId(usernameInput, centralUserDB);
+                User user = new User(username, "", DateTime.Now, password);
+                user.userId = DataBaseHelper.GetUserId(username, centralUserDB);
                 user.SetLoggedIn(true);
                 return user;
             }
