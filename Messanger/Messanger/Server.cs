@@ -74,8 +74,21 @@ namespace ServerNamespace
 
                 IRequest? request = ParseJsonToRequest(line);
 
-                if (request != null)
-                    _handler.NotifyObservers(request);
+                switch (request)
+                {
+                    case ClientLoginRequest clr:
+                        _handler.NotifyObservers(clr);
+                        break;
+                    case ClientRegisterRequest crr:
+                        _handler.NotifyObservers(crr);
+                        break;
+                    case ClientConnectRequest ccr:
+                        _handler.NotifyObservers(ccr);
+                        break;
+                    default:
+                        Console.WriteLine("Unknown request type: " + request.GetType());
+                        break;
+                }
             }
         }
 
