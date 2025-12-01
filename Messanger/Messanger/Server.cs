@@ -30,10 +30,30 @@ namespace ServerNamespace
         }
         public void Start(int port)
         {
-            _listener = new TcpListener(IPAddress.Any, port);
-            _listener.Start();
+            _listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
+            try
+            {
+                _listener.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Listener konnte nicht gestartet werden: " + ex.Message);
+                throw;
+            }
 
             Console.WriteLine("Server started on port " + port);
+            try
+            {
+                var host = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (var addr in host.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
+                {
+                    Console.WriteLine($"Listening on {addr}:{port}  (use this IP from remote clients)");
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Konnte lokale IP-Adressen nicht ermitteln. Nutze 'ipconfig' oder 'Get-NetIPAddress'.");
+            }
 
             Task.Run(() => AcceptLoop());
         }
