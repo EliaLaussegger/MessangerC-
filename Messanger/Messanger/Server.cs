@@ -90,7 +90,7 @@ namespace ServerNamespace
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                Console.WriteLine("Received JSON: " + line);
+                //Console.WriteLine("Received JSON: " + line);
 
                 IRequest? request = ParseJsonToRequest(line);
 
@@ -104,6 +104,9 @@ namespace ServerNamespace
                         break;
                     case ClientConnectRequest ccr:
                         _handler.NotifyObservers(ccr);
+                        break;
+                    case ClientMessageRequest cmr:
+                        _handler.NotifyObservers(cmr);
                         break;
                     default:
                         Console.WriteLine("Unknown request type: " + request.GetType());
@@ -123,6 +126,7 @@ namespace ServerNamespace
                 "login" => JsonSerializer.Deserialize<ClientLoginRequest>(json),
                 "register" => JsonSerializer.Deserialize<ClientRegisterRequest>(json),
                 "connect" => JsonSerializer.Deserialize<ClientConnectRequest>(json),
+                "message" => JsonSerializer.Deserialize<ClientMessageRequest>(json),
                 _ => null
             };
 

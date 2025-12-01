@@ -49,4 +49,19 @@ namespace Delegates
             user = UserFunctions.CreateUser();
         }
     }
+    class ClientMessageRequest : IRequest
+    {
+        public string json { get; set; }
+        public User user { get; protected set; }
+        public void Execute()
+        {
+            using var doc = JsonDocument.Parse(json);
+            string username = doc.RootElement.GetProperty("senderId").GetString()!;
+            string userId = DataBaseHelper.GetUserId(username);
+            string message = doc.RootElement.GetProperty("content").GetString()!;
+            string receiver = doc.RootElement.GetProperty("receiverId").GetString()!;
+            Console.WriteLine($"Message from {username} to {receiver}: {message}");
+
+        }
+    }
 }

@@ -40,7 +40,7 @@ namespace ClientNamespace
                     if (line == null)
                         break;
 
-                    Console.WriteLine("SERVER -> CLIENT: " + line);
+                    //Console.WriteLine("SERVER -> CLIENT: " + line);
                 }
             }
             catch
@@ -54,7 +54,7 @@ namespace ClientNamespace
         {
             string json = JsonSerializer.Serialize(request);
             _writer.WriteLine(json);
-            Console.WriteLine("CLIENT -> SERVER: " + json);
+            //Console.WriteLine("CLIENT -> SERVER: " + json);
         }
 
         public void Dispose()

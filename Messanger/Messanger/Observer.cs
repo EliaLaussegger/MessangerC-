@@ -68,5 +68,14 @@ namespace ObserverNamespace
             return this;
         }
     }
+    class ClientMessageObserver : Observer<ClientMessageRequest>, IObserver<ClientMessageRequest>
+    {
+        public IObserver<ClientMessageRequest> Update(ClientMessageRequest request)
+        {
+            request.Execute();
+            this.request = request;
+            return this;
+        }
+    }
 
 }

@@ -21,12 +21,18 @@ namespace DataBank
     }
     public class CentralUserDB : IDatabase
     {
-        public SqliteConnection connection { get; private set; }
-        public CentralUserDB()
-        {
+        private static readonly Lazy<CentralUserDB> _instance =
+      new Lazy<CentralUserDB>(() => new CentralUserDB());
 
-            
-            string dbPath = Path.Combine(CreateFolder("CentralUserDB"), "clientdata.db");
+        // Zugriffspunkt
+        public static CentralUserDB Instance => _instance.Value;
+
+        // Verhindert, dass man new CentralUserDB() aufrufen kann
+        private CentralUserDB()
+        {
+            string dbPath = Path.Combine(HelperClass.CreateFolder("CentralUserDB"), "clientdata.db");
+            Console.WriteLine("Datenbankpfad: " + dbPath);
+
             connection = new SqliteConnection($"Data Source={dbPath}");
             connection.Open();
 
@@ -39,9 +45,31 @@ namespace DataBank
             );", connection);
             cmd.ExecuteNonQuery();
         }
+
+        // Dein Property
+        public SqliteConnection connection { get; private set; }
+        //public SqliteConnection connection { get; private set; }
+        //public CentralUserDB()
+        //{
+
+
+        //    string dbPath = Path.Combine(CreateFolder("CentralUserDB"), "clientdata.db");
+        //    Console.WriteLine("Datenbankpfad: " + dbPath);
+        //    connection = new SqliteConnection($"Data Source={dbPath}");
+        //    connection.Open();
+
+        //    using var cmd = new SqliteCommand(@"
+        //    CREATE TABLE IF NOT EXISTS UserData(
+        //    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
+        //    UserName TEXT NOT NULL UNIQUE,
+        //    PasswordHash TEXT NOT NULL,
+        //    PasswordSalt TEXT NOT NULL
+        //    );", connection);
+        //    cmd.ExecuteNonQuery();
+        //}
         public void RegisterUser(User user)
         {
-            if (DataBaseHelper.UserExists(user.username, this))
+            if (DataBaseHelper.UserExists(user.username))
             {
                 Console.WriteLine("Benutzer existiert schon");
                 return;
@@ -63,8 +91,8 @@ namespace DataBank
         }
         public bool Login(string username, string password)
         {
-            string userSalt = DataBaseHelper.GetUserSalt(username, this);
-            if (DataBaseHelper.VerifyPassword(password, DataBaseHelper.GetPasswordHash(username, this), userSalt))
+            string userSalt = DataBaseHelper.GetUserSalt(username);
+            if (DataBaseHelper.VerifyPassword(password, DataBaseHelper.GetPasswordHash(username), userSalt))
             {
                 return true;
                 Console.WriteLine("Login erfolgreich!");
@@ -115,11 +143,11 @@ namespace DataBank
 
             return Convert.ToBase64String(hashBytes) == storedHash;
         }
-        public static string GetPasswordHash(string username, CentralUserDB centralUserDB)
+        public static string GetPasswordHash(string username)
         {
             using var hashCmd = new SqliteCommand(
                 "SELECT PasswordHash FROM UserData WHERE UserName = @u",
-                centralUserDB.connection
+                CentralUserDB.Instance.connection
             );
             hashCmd.Parameters.AddWithValue("@u", username);
             using var reader = hashCmd.ExecuteReader();
@@ -132,22 +160,22 @@ namespace DataBank
                 return null;
             }
         }
-        public static bool UserExists(string username, CentralUserDB centralUserDB)
+        public static bool UserExists(string username)
         {
             using var checkCmd = new SqliteCommand(
                 "SELECT COUNT(*) FROM UserData WHERE UserName = @u",
-                centralUserDB.connection
+                 CentralUserDB.Instance.connection
             );
             checkCmd.Parameters.AddWithValue("@u", username);
 
             long count = (long)checkCmd.ExecuteScalar();
             return count > 0;
         }
-        public static string GetUserId(string username, CentralUserDB centralUserDB)
+        public static string GetUserName(string username)
         {
             using var idCmd = new SqliteCommand(
                 "SELECT UserId FROM UserData WHERE UserName = @u",
-                centralUserDB.connection
+                 CentralUserDB.Instance.connection
             );
             idCmd.Parameters.AddWithValue("@u", username);
             using var reader = idCmd.ExecuteReader();
@@ -160,11 +188,28 @@ namespace DataBank
                 return null;
             }
         }
-        public static string GetUserSalt(string username, CentralUserDB centralUserDB)
+        public static string GetUserId(string username)
+        {
+            using var idCmd = new SqliteCommand(
+                "SELECT UserId FROM UserData WHERE UserName = @u",
+                 CentralUserDB.Instance.connection
+            );
+            idCmd.Parameters.AddWithValue("@u", username);
+            using var reader = idCmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetInt32(0).ToString();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static string GetUserSalt(string username)
         {
             using var saltCmd = new SqliteCommand(
                 "SELECT PasswordSalt FROM UserData WHERE UserName = @u",
-                centralUserDB.connection
+                 CentralUserDB.Instance.connection
             );
             saltCmd.Parameters.AddWithValue("@u", username);
             using var reader = saltCmd.ExecuteReader();

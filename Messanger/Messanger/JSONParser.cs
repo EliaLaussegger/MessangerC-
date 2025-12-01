@@ -59,4 +59,17 @@ namespace JsonParser
             }
         }
     }
+    class LoginSendModel
+    {
+        public string type { get; set; } = "login";
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+    class MessageSendModel
+    {
+        public string type { get; set; } = "message";
+        public string senderId { get; set; }
+        public string receiverId { get; set; }
+        public string content { get; set; }
+    }
 }

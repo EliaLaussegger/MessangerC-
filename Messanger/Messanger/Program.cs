@@ -4,22 +4,16 @@ using ObserverNamespace;
 using ServerNamespace;
 using UserNamespace;
 using ClientNamespace;
+using Helper;
 class Program
 {
-    class LoginSendModel
-    {
-        public string type { get; set; } = "login";
-        public string username { get; set; }
-        public string password { get; set; }
-    }
     static void Main(string[] args)
     {
         ClientRequestHandler handler = new ClientRequestHandler();
-
         handler.RegisterObserver(new ClientLoginObserver());
         handler.RegisterObserver(new ClientRegisterObserver());
         handler.RegisterObserver(new ClientConnect());
-
+        handler.RegisterObserver(new ClientMessageObserver());
         Server server = new Server(workerCount: 4, requestHandler: handler);
 
         server.Start(3000);

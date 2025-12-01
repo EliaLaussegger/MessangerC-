@@ -69,20 +69,17 @@ namespace UserNamespace
             Console.WriteLine("Enter password");
             string passwordInput = Console.ReadLine();
             User newUser = new User(nameInput, emailInput, dob, passwordInput);
-            CentralUserDB centralUserDB = new CentralUserDB();
 
-            centralUserDB.RegisterUser(newUser);
+            CentralUserDB.Instance.RegisterUser(newUser);
             return newUser;
         }
         public static User LoginUser(string username, string password)
         {
-            CentralUserDB centralUserDB = new CentralUserDB();
-            if (centralUserDB.Login(username, password))
+            if (CentralUserDB.Instance.Login(username, password))
             {
                 Console.WriteLine("Login successful");
                 User user = new User(username, "", DateTime.Now, password);
-                user.userId = DataBaseHelper.GetUserId(username, centralUserDB);
-                user.SetLoggedIn(true);
+                user.userId = DataBaseHelper.GetUserId(username);
                 return user;
             }
             else
