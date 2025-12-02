@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserNamespace;
+using ServerNamespace;
 namespace ObserverNamespace
 {
     public interface IObserver<T> where T : IRequest
@@ -70,8 +71,10 @@ namespace ObserverNamespace
     }
     class ClientMessageObserver : Observer<ClientMessageRequest>, IObserver<ClientMessageRequest>
     {
+        public Server server { get; set; }
         public IObserver<ClientMessageRequest> Update(ClientMessageRequest request)
         {
+            request.server = server;
             request.Execute();
             this.request = request;
             return this;

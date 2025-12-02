@@ -3,22 +3,27 @@ using Microsoft.Data.Sqlite;
 using ObserverNamespace;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
 using UserNamespace;
-using System.Text.Json;
 namespace ServerNamespace
 {
     class Server
     {
 
-        private readonly ThreadPoolNamespace.ThreadPool _threadPool;
+        public ThreadPoolNamespace.ThreadPool _threadPool;
         private TcpListener? _listener;
         private readonly ClientRequestHandler _requestHandler;
+        private StreamWriter _writer;
+        private NetworkStream _stream;
+        public List<ClientTCPConnectedRequest> connectedClients = new List<ClientTCPConnectedRequest>();
+
         public Server(int workerCount, ClientRequestHandler requestHandler)
         {
             _threadPool = new ThreadPoolNamespace.ThreadPool(workerCount);
@@ -31,6 +36,7 @@ namespace ServerNamespace
         public void Start(int port)
         {
             _listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
+            //_writer = new StreamWriter(_stream, Encoding.UTF8) { AutoFlush = true };
             try
             {
                 _listener.Start();
@@ -62,17 +68,28 @@ namespace ServerNamespace
             while (true)
             {
                 TcpClient client = await _listener!.AcceptTcpClientAsync();
+                _stream = client.GetStream();
                 Console.WriteLine("Client connected via TCP.");
-
-                _threadPool.QueueWorkItem(new ClientTCPConnectedRequest(client, _requestHandler));
+                ClientTCPConnectedRequest clientTCPConnectedRequest = new ClientTCPConnectedRequest(client, _requestHandler);
+                clientTCPConnectedRequest.server = this;
+                connectedClients.Add(clientTCPConnectedRequest);
+                _threadPool.QueueWorkItem(clientTCPConnectedRequest);
             }
+        }
+        public void SendRequest(object request)
+        {
+            string json = JsonSerializer.Serialize(request);
+            _writer.WriteLine(json);
         }
 
     }
     class ClientTCPConnectedRequest : IRequest
     {
-        private readonly TcpClient _client;
+        public TcpClient _client;
         private readonly ClientRequestHandler _handler;
+        public Server server;
+        public NetworkStream stream;
+        public StreamWriter streamWriter;
         public string json { get; set; }
 
 
@@ -84,8 +101,9 @@ namespace ServerNamespace
 
         public void Execute()
         {
-            using var stream = _client.GetStream();
+            stream = _client.GetStream();
             using var reader = new StreamReader(stream, Encoding.UTF8);
+            streamWriter = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
 
             string? line;
             while ((line = reader.ReadLine()) != null)
@@ -107,6 +125,10 @@ namespace ServerNamespace
                         break;
                     case ClientMessageRequest cmr:
                         _handler.NotifyObservers(cmr);
+                        ServerMessageRequest serverMessageRequest = new ServerMessageRequest();
+                        serverMessageRequest.clientTCPConnectedRequest = this;
+                        serverMessageRequest.clientMessageRequest = cmr;
+                        server._threadPool.QueueWorkItem(serverMessageRequest);
                         break;
                     default:
                         Console.WriteLine("Unknown request type: " + request.GetType());
@@ -145,4 +167,26 @@ namespace ServerNamespace
             Console.WriteLine("Server connected.");
         }
     }
+    class ServerMessageRequest : IRequest
+    {
+        public string json { get; set; }
+        public ClientTCPConnectedRequest clientTCPConnectedRequest;
+        public ClientMessageRequest clientMessageRequest { get; set; }
+        public void Execute()
+        {
+            for (int i = 0; i < clientTCPConnectedRequest.server.connectedClients.Count; i++)
+            {
+                ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
+                targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+
+                //if (targetClient != clientTCPConnectedRequest)
+                //{
+                //    targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+
+                //}
+            }
+
+        }
+    }
+    
 }

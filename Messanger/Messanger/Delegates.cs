@@ -1,4 +1,5 @@
 ﻿using DataBank;
+using ServerNamespace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ namespace Delegates
     {
         public string json { get; set; }
         public User user { get; protected set; }
+        public Server server;
         public void Execute()
         {
             using var doc = JsonDocument.Parse(json);
