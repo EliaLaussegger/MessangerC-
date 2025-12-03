@@ -16,7 +16,7 @@ namespace ObserverNamespace
     {
         public T request { get; protected set; }
     }
-    class ClientRequestHandler
+    public class ClientRequestHandler
     {
         private readonly List<object> _observers = new List<object>();
         public void RegisterObserver<T>(IObserver<T> observer) where T : IRequest

@@ -12,9 +12,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
 using UserNamespace;
+using DataBank;
 namespace ServerNamespace
 {
-    class Server
+    public class Server
     {
 
         public ThreadPoolNamespace.ThreadPool _threadPool;
@@ -83,13 +84,15 @@ namespace ServerNamespace
         }
 
     }
-    class ClientTCPConnectedRequest : IRequest
+    public class ClientTCPConnectedRequest : IRequest
     {
+
         public TcpClient _client;
         private readonly ClientRequestHandler _handler;
         public Server server;
         public NetworkStream stream;
         public StreamWriter streamWriter;
+        public User user;
         public string json { get; set; }
 
 
@@ -115,6 +118,8 @@ namespace ServerNamespace
                 switch (request)
                 {
                     case ClientLoginRequest clr:
+                        clr.clientTCPConnectedRequest = this;
+                        clr.server = server;
                         _handler.NotifyObservers(clr);
                         break;
                     case ClientRegisterRequest crr:
@@ -124,6 +129,7 @@ namespace ServerNamespace
                         _handler.NotifyObservers(ccr);
                         break;
                     case ClientMessageRequest cmr:
+                        cmr.clientTCPConnectedRequest = this;
                         _handler.NotifyObservers(cmr);
                         ServerMessageRequest serverMessageRequest = new ServerMessageRequest();
                         serverMessageRequest.clientTCPConnectedRequest = this;
@@ -160,6 +166,7 @@ namespace ServerNamespace
     }
     class ServerConnectRequest : IRequest
     {
+
         public string json { get; set; }
 
         public void Execute()
@@ -167,17 +174,30 @@ namespace ServerNamespace
             Console.WriteLine("Server connected.");
         }
     }
-    class ServerMessageRequest : IRequest
+    class ServerMessageRequest : IRequest, ITcpClientRequest
     {
+        public TcpClient client { get; set; }
+
         public string json { get; set; }
-        public ClientTCPConnectedRequest clientTCPConnectedRequest;
+        public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
         public ClientMessageRequest clientMessageRequest { get; set; }
         public void Execute()
         {
+            
+            //DataBaseHelper.GetUserId(clientMessageRequest.username);
             for (int i = 0; i < clientTCPConnectedRequest.server.connectedClients.Count; i++)
             {
-                ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
-                targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                using var doc = JsonDocument.Parse(clientMessageRequest.json);
+                string username = doc.RootElement.GetProperty("receiverId").GetString()!;
+                string userId = DataBaseHelper.GetUserId(username);
+                if(userId == clientTCPConnectedRequest.server.connectedClients[i].user.userId)
+                {
+                    ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
+                    targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                }
+                
+                //User user = clientTCPConnectedRequest.server.connectedClients[i].user;
+                
 
                 //if (targetClient != clientTCPConnectedRequest)
                 //{
