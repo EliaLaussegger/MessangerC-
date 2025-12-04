@@ -183,21 +183,25 @@ namespace ServerNamespace
         public ClientMessageRequest clientMessageRequest { get; set; }
         public void Execute()
         {
-            
+
             //DataBaseHelper.GetUserId(clientMessageRequest.username);
-            for (int i = 0; i < clientTCPConnectedRequest.server.connectedClients.Count; i++)
+            try
             {
-                using var doc = JsonDocument.Parse(clientMessageRequest.json);
-                string username = doc.RootElement.GetProperty("receiverId").GetString()!;
-                string userId = DataBaseHelper.GetUserId(username);
-                if(userId == clientTCPConnectedRequest.server.connectedClients[i].user.userId)
+                for (int i = 0; i < clientTCPConnectedRequest.server.connectedClients.Count; i++)
                 {
-                    ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
-                    targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                    using var doc = JsonDocument.Parse(clientMessageRequest.json);
+                    string username = doc.RootElement.GetProperty("receiverId").GetString()!;
+                    string userId = DataBaseHelper.GetUserId(username);
+                    if (userId == clientTCPConnectedRequest.server.connectedClients[i].user.userId)
+                    {
+                        ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
+                        targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                    }
+
+
                 }
-                
                 //User user = clientTCPConnectedRequest.server.connectedClients[i].user;
-                
+
 
                 //if (targetClient != clientTCPConnectedRequest)
                 //{
@@ -205,7 +209,11 @@ namespace ServerNamespace
 
                 //}
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fehler beim Senden der Nachricht: " + ex.Message);
 
+            }
         }
     }
     
