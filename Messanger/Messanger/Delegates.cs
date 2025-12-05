@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using UserNamespace;
+using JsonParser;
 namespace Delegates
 {
     public interface IServerEvent : IRequest { }
@@ -52,12 +53,22 @@ namespace Delegates
             client = clientTCPConnectedRequest._client;
             for (int i = 0; i < server.connectedClients.Count; i++)
             {
-                if(server.connectedClients[i]._client == client)
+                if (server.connectedClients[i]._client == client)
                 {
                     server.connectedClients[i].user = user;
+                    UserSerializable jsonUser = new UserSerializable
+                    {
+                        username = user.username,
+                        email = user.email,
+                        userId = user.userId,
+                        dateOfBirth = user.dateOfBirth
+                    };
+                    server.connectedClients[i].streamWriter.WriteLine(JsonSerializer.Serialize(new LoginResponseModel { message = "Logged in", status = "sucess", user = jsonUser }));
+                    Console.WriteLine(JsonSerializer.Serialize(new LoginResponseModel { message = "Logged in", status = "sucess", user = jsonUser}));
                 }
+                
             }
-
+           
 
 
         }

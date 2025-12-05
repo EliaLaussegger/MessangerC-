@@ -27,7 +27,6 @@ class Program
         //});
         Console.ReadLine();
 
-        //CentralUserDB centralUserDB = new CentralUserDB();
         //handler.NotifyObservers(new ClientConnectRequest());
         ////User user = userFunction.CreateUser();
         ////centralUserDB.TestRegistration(user.username);

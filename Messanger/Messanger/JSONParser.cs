@@ -72,4 +72,11 @@ namespace JsonParser
         public string receiverId { get; set; }
         public string content { get; set; }
     }
+    class LoginResponseModel
+    {
+        public string type { get; set; } = "loginResponse";
+        public string status { get; set; }
+        public string message { get; set; }
+        public UserSerializable user { get; set; }
+    }
 }
