@@ -59,24 +59,43 @@ namespace JsonParser
             }
         }
     }
-    class LoginSendModel
+    interface ISendModel
+    {
+        string type { get; set; }
+    }
+    class LoginSendModel : ISendModel
     {
         public string type { get; set; } = "login";
         public string username { get; set; }
         public string password { get; set; }
     }
-    class MessageSendModel
+    class MessageSendModel : ISendModel
     {
         public string type { get; set; } = "message";
         public string senderId { get; set; }
         public string receiverId { get; set; }
         public string content { get; set; }
     }
-    class LoginResponseModel
+    class LoginResponseModel : ISendModel
     {
         public string type { get; set; } = "loginResponse";
         public string status { get; set; }
         public string message { get; set; }
         public UserSerializable user { get; set; }
+    }
+    class MessageResponseModel : ISendModel
+    {
+        public string type { get; set; } = "messageResponse";
+        public string status { get; set; }
+        public string message { get; set; }
+        public MessageSerializable messageData { get; set; }
+    }
+    class RegisterResponseModel : ISendModel
+    {
+        public string type { get; set; } = "registerResponse";
+        public string status { get; set; }
+        public string message { get; set; }
+        public UserSerializable user { get; set; }
+
     }
 }
