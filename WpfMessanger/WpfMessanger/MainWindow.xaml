@@ -7,6 +7,23 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Label Content="Username:"/>
+        <TextBox Name="UsernameBox" Margin="5,25,500,355" RenderTransformOrigin="0.5,0.5">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.877"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-3.208"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+
+        <Label Content="Password:" Margin="10,232,-10,-232"/>
+        <PasswordBox Name="PasswordBox" Margin="10,260,-10,70"/>
+
+        <Button Content="Login" Grid.Row="2" Height="30"
+                    Click="LoginButton_Click"/>
 
     </Grid>
 </Window>

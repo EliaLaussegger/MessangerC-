@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using DataBank;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,29 @@ namespace WpfMessanger
     /// </summary>
     public partial class MainWindow : Window
     {
+        private CentralUserDB userDb;
+
         public MainWindow()
         {
             InitializeComponent();
+            userDb = CentralUserDB.Instance; // wenn du Singleton machst
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            string username = UsernameBox.Text;
+            string password = PasswordBox.Password;
+
+            if (userDb.Login(username, password))
+            {
+                MessageBox.Show("Login erfolgreich!");
+                //new ChatWindow(username).Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Login fehlgeschlagen!");
+            }
         }
     }
 }
