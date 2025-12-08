@@ -1,4 +1,5 @@
-﻿using DataBank;
+﻿using ClientNamespace;
+using DataBank;
 using MessengerClient;
 using System.Text;
 using System.Windows;
@@ -10,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using JsonParser;
 namespace WpfMessanger
 {
     /// <summary>
@@ -30,11 +31,16 @@ namespace WpfMessanger
         {
             string username = UsernameBox.Text;
             string password = PasswordBox.Password;
-
+            var client = new TcpJsonClient("192.168.178.39", 3000);
+            client.SendRequest(new LoginSendModel
+            {
+                username = username,
+                password = password
+            });
             if (userDb.Login(username, password))
             {
                 MessageBox.Show("Login erfolgreich!");
-                new ChatWindow(username).Show();
+                new ChatWindow(username, client).Show();
                 this.Close();
             }
             else

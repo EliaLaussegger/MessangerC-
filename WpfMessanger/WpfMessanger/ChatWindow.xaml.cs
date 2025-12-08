@@ -21,6 +21,7 @@ namespace MessengerClient
     public partial class ChatWindow : Window
     {
         private string username;
+        private TcpJsonClient client;
 
         // Parameterloser Konstruktor, falls die XAML oder anderer Code eine
         // Instanz ohne Parameter erzeugt.
@@ -29,9 +30,10 @@ namespace MessengerClient
             InitializeComponent();
         }
 
-        public ChatWindow(string username) : this()
+        public ChatWindow(string username, TcpJsonClient client) : this()
         {
             this.username = username;
+            this.client = client;
         }
 
         private void SendMessage_Click(object sender, RoutedEventArgs e)
@@ -40,7 +42,6 @@ namespace MessengerClient
             string message = this.MessageBox.Text;
             if (!string.IsNullOrWhiteSpace(message))
             {
-                var client = new TcpJsonClient("192.168.178.39", 3000);
                 client.SendRequest(new MessageSendModel
                 {
                     senderId = username,
