@@ -48,3 +48,5 @@ C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8
 C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8.0-windows\WpfMessanger.pdb
 C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8.0-windows\WpfMessanger.genruntimeconfig.cache
 C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8.0-windows\ref\WpfMessanger.dll
+C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8.0-windows\ChatWindow.baml
+C:\Users\elial\source\repos\MessangerC-\WpfMessanger\WpfMessanger\obj\Debug\net8.0-windows\ChatWindow.g.cs

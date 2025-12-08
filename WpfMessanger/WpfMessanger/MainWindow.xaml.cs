@@ -1,4 +1,5 @@
 ﻿using DataBank;
+using MessengerClient;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +34,7 @@ namespace WpfMessanger
             if (userDb.Login(username, password))
             {
                 MessageBox.Show("Login erfolgreich!");
-                //new ChatWindow(username).Show();
+                new ChatWindow(username).Show();
                 this.Close();
             }
             else
