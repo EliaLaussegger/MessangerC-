@@ -33,7 +33,7 @@ namespace WpfMessanger
             string username = UsernameBox.Text;
             string password = PasswordBox.Password;
             var client = new TcpJsonClient("192.168.178.39", 3000);
-            client.SendRequest(new LoginSendModel
+            client.SendRequest(new LoginSendModel 
             {
                 username = username,
                 password = password
