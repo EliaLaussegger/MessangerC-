@@ -24,7 +24,7 @@ namespace Delegates
     }
     public interface ITcpClientRequest
     {
-        TcpJsonClient client { get; set; }
+        TcpClient client { get; set; }
         ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
     }
     class ServerConnectClientRequest : IRequest
@@ -39,7 +39,7 @@ namespace Delegates
     }
     class ServerLoginRequest : IRequest , ITcpClientRequest
     {
-        public TcpJsonClient client { get; set; }
+        public TcpClient client { get; set; }
         public Server server;
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -65,18 +65,18 @@ namespace Delegates
                         dateOfBirth = user.dateOfBirth
                     };
                     server.connectedClients[i].streamWriter.WriteLine(JsonSerializer.Serialize(new LoginResponseModel { message = "Logged in", status = "sucess", user = jsonUser }));
-                    Console.WriteLine(JsonSerializer.Serialize(new LoginResponseModel { message = "Logged in", status = "sucess", user = jsonUser}));
+                    Console.WriteLine(JsonSerializer.Serialize(new LoginResponseModel { message = "Logged in", status = "sucess", user = jsonUser }));
                 }
-                
+
             }
-           
+
 
 
         }
     }
     class ServerRegisterRequest : IRequest , ITcpClientRequest
     {
-        public TcpJsonClient client { get; set; }
+        public TcpClient client { get; set; }
 
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -89,7 +89,7 @@ namespace Delegates
     }
     class ServerMessageRequest : IRequest, ITcpClientRequest
     {
-        public TcpJsonClient client { get; set; }
+        public TcpClient client { get; set; }
 
         public string json { get; set; }
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }

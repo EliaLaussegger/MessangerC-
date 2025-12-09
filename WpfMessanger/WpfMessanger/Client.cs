@@ -94,7 +94,7 @@ namespace ClientNamespace
         }
         class ClientLoginRequest : IRequest, ITcpClientRequest
         {
-            public TcpJsonClient client { get; set; }
+            public TcpClient client { get; set; }
             public Server server;
             public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -113,7 +113,7 @@ namespace ClientNamespace
         }
         class ClientMessageRequest : IRequest, ITcpClientRequest
         {
-            public TcpJsonClient client { get; set; }
+            public TcpClient client { get; set; }
 
             public string json { get; set; }
             public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }

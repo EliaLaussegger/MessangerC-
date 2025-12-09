@@ -107,7 +107,7 @@ namespace ServerNamespace
 
         public void Execute()
         {
-            stream = _client._client.GetStream();
+            stream = _clientTCP.GetStream();
             using var reader = new StreamReader(stream, Encoding.UTF8);
             streamWriter = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
 
@@ -179,7 +179,7 @@ namespace ServerNamespace
     }
     class ServerMessageRequest : IRequest, ITcpClientRequest
     {
-        public TcpJsonClient client { get; set; }
+        public TcpClient client { get; set; }
 
         public string json { get; set; }
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
