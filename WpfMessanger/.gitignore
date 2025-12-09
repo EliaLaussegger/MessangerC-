@@ -199,3 +199,10 @@ git_stats/*
 StyleCop.Cache
 bin
 obj
+log/
+obj/
+_site/
+.optemp/
+_themes*/
+
+.openpublishing.buildcore.ps1
