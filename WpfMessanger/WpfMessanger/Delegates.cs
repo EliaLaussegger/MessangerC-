@@ -1,4 +1,6 @@
-﻿using DataBank;
+﻿using ClientNamespace;
+using DataBank;
+using JsonParser;
 using ServerNamespace;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using UserNamespace;
-using JsonParser;
 namespace Delegates
 {
     public interface IServerEvent : IRequest { }
@@ -23,10 +24,10 @@ namespace Delegates
     }
     public interface ITcpClientRequest
     {
-        TcpClient client { get; set; }
+        TcpJsonClient client { get; set; }
         ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
     }
-    class ClientConnectRequest : IRequest
+    class ServerConnectClientRequest : IRequest
     {
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -36,9 +37,9 @@ namespace Delegates
             Console.WriteLine("Client Request Executed");
         }
     }
-    class ClientLoginRequest : IRequest , ITcpClientRequest
+    class ServerLoginRequest : IRequest , ITcpClientRequest
     {
-        public TcpClient client { get; set; }
+        public TcpJsonClient client { get; set; }
         public Server server;
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -73,9 +74,9 @@ namespace Delegates
 
         }
     }
-    class ClientRegisterRequest : IRequest , ITcpClientRequest
+    class ServerRegisterRequest : IRequest , ITcpClientRequest
     {
-        public TcpClient client { get; set; }
+        public TcpJsonClient client { get; set; }
 
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
 
@@ -86,9 +87,9 @@ namespace Delegates
             user = UserFunctions.CreateUser();
         }
     }
-    class ClientMessageRequest : IRequest, ITcpClientRequest
+    class ServerMessageRequest : IRequest, ITcpClientRequest
     {
-        public TcpClient client { get; set; }
+        public TcpJsonClient client { get; set; }
 
         public string json { get; set; }
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }

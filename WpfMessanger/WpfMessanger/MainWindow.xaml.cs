@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using JsonParser;
+using ClientNamespace;
 namespace WpfMessanger
 {
     /// <summary>
@@ -40,7 +41,10 @@ namespace WpfMessanger
             if (userDb.Login(username, password))
             {
                 MessageBox.Show("Login erfolgreich!");
-                new ChatWindow(username, client).Show();
+                ChatWindow chatWindow = new ChatWindow(username, client);
+                chatWindow.Show();
+                client.SetChatWindow(chatWindow);
+
                 this.Close();
             }
             else

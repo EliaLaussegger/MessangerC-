@@ -22,7 +22,7 @@
             <ListBox Name="MessageList" Grid.Row="0"/>
 
             <DockPanel Grid.Row="1">
-                <TextBox x:Name="MessageBox" Width="200" Height="30" DockPanel.Dock="Left" Margin="5"/>
+                <TextBox x:Name="MessageBox" Width="200" Height="30" DockPanel.Dock="Left" Margin="5" Text=""/>
                 <Button Content="Send" Width="80"
                         DockPanel.Dock="Right"
                         Click="SendMessage_Click"/>

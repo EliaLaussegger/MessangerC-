@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Label Content="Username:"/>
-        <TextBox Name="UsernameBox" Margin="5,25,500,355" RenderTransformOrigin="0.5,0.5">
+        <TextBox Name="UsernameBox" Margin="7,36,498,344" RenderTransformOrigin="0.5,0.5">
             <TextBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -19,11 +19,11 @@
             </TextBox.RenderTransform>
         </TextBox>
 
-        <Label Content="Password:" Margin="10,232,-10,-232"/>
-        <PasswordBox Name="PasswordBox" Margin="10,260,-10,70"/>
+        <Label Content="Password:" Margin="0,95,0,-95"/>
+        <PasswordBox Name="PasswordBox" Margin="0,132,0,198"/>
 
-        <Button Content="Login" Grid.Row="2" Height="30"
-                    Click="LoginButton_Click"/>
+        <Button Content="Login" Height="30"
+                    Click="LoginButton_Click" Margin="0,269,0,135"/>
 
     </Grid>
 </Window>

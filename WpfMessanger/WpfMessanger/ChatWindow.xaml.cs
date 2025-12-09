@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using JsonParser;
+using MessagesNameSpace;
 namespace MessengerClient
 {
     /// <summary>
@@ -51,6 +52,11 @@ namespace MessengerClient
                 this.MessageList.Items.Add(message);
                 this.MessageBox.Clear();    
             }
+        }
+        public void ReceiveMessage(Message message)
+        {
+            // Nachricht zur MessageList hinzufügen
+            this.MessageList.Items.Add(message);
         }
     }
 }

@@ -41,17 +41,17 @@ namespace ObserverNamespace
             return notifiedObservers;
         }
     }
-    class ClientConnect : Observer<ClientConnectRequest>, IObserver<ClientConnectRequest>
+    class ClientConnect : Observer<ServerConnectClientRequest>, IObserver<ServerConnectClientRequest>
     {
-        public IObserver<ClientConnectRequest> Update(ClientConnectRequest request)
+        public IObserver<ServerConnectClientRequest> Update(ServerConnectClientRequest request)
         {
             Console.WriteLine("Client connected.");
             return this;
         }
     }
-    class ClientLoginObserver : Observer<ClientLoginRequest>, IObserver<ClientLoginRequest>
+    class ClientLoginObserver : Observer<ServerLoginRequest>, IObserver<ServerLoginRequest>
     {
-        public IObserver<ClientLoginRequest> Update(ClientLoginRequest request)
+        public IObserver<ServerLoginRequest> Update(ServerLoginRequest request)
         {
             request.Execute();
             Console.WriteLine(request.user.username + " logged in.");
@@ -59,20 +59,20 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientRegisterObserver : Observer<ClientRegisterRequest>, IObserver<ClientRegisterRequest>
+    class ClientRegisterObserver : Observer<ServerRegisterRequest>, IObserver<ServerRegisterRequest>
     {
 
-        public IObserver<ClientRegisterRequest> Update(ClientRegisterRequest request)
+        public IObserver<ServerRegisterRequest> Update(ServerRegisterRequest request)
         {
             request.Execute();
             this.request = request;
             return this;
         }
     }
-    class ClientMessageObserver : Observer<ClientMessageRequest>, IObserver<ClientMessageRequest>
+    class ClientMessageObserver : Observer<Delegates.ServerMessageRequest>, IObserver<Delegates.ServerMessageRequest>
     {
         public Server server { get; set; }
-        public IObserver<ClientMessageRequest> Update(ClientMessageRequest request)
+        public IObserver<Delegates.ServerMessageRequest> Update(Delegates.ServerMessageRequest request)
         {
             request.server = server;
             request.Execute();
