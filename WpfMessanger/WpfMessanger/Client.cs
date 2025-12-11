@@ -106,7 +106,7 @@ namespace ClientNamespace
                 string username = doc.RootElement.GetProperty("username").GetString()!;
                 string password = doc.RootElement.GetProperty("password").GetString()!;
                 user = UserFunctions.LoginUser(username, password);
-                client = clientTCPConnectedRequest._client;
+                client = clientTCPConnectedRequest._clientTCP;
 
 
             }
@@ -127,7 +127,7 @@ namespace ClientNamespace
                 string message = doc.RootElement.GetProperty("content").GetString()!;
                 string receiver = doc.RootElement.GetProperty("receiverId").GetString()!;
                 Message message1 = new Message(username, userId, message);
-                client.chat.ReceiveMessage(message1);
+               // client.chat.ReceiveMessage(message1);
 
             }
         }
