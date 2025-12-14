@@ -3,6 +3,7 @@ using Delegates;
 using JsonParser;
 using MessagesNameSpace;
 using MessengerClient;
+using ObserverNamespace;
 using ServerNamespace;
 using System;
 using System.IO;
@@ -19,6 +20,7 @@ namespace ClientNamespace
         private NetworkStream _stream;
         private StreamReader _reader;
         private StreamWriter _writer;
+        private readonly ClientRequestHandler _handler;
 
         private ChatWindow chat;
         public bool Connected => _client.Connected;
@@ -48,6 +50,15 @@ namespace ClientNamespace
                     if (line == null)
                         break;
                     IRequest? request = ParseJsonToRequest(line);
+                    switch (request)
+                    {
+                        case ClientMessageRequest cmr:
+                            cmr.client = this._client;
+                            cmr.Execute();
+                            
+                            break;
+
+                    }
                     //Console.WriteLine("SERVER -> CLIENT: " + line);
                 }
             }
@@ -66,7 +77,7 @@ namespace ClientNamespace
                 "login" => JsonSerializer.Deserialize<ClientLoginRequest>(json),
                 "register" => JsonSerializer.Deserialize<ServerRegisterRequest>(json),
                 "connect" => JsonSerializer.Deserialize<ServerConnectClientRequest>(json),
-                "message" => JsonSerializer.Deserialize<Delegates.ServerMessageRequest>(json),
+                "message" => JsonSerializer.Deserialize<ClientMessageRequest>(json),
                 _ => null
             };
 
@@ -110,6 +121,11 @@ namespace ClientNamespace
 
 
             }
+        }
+        public class TcpJsonClientAtributes
+        {
+            public string username { get; set; }
+            public string userId { get; set; }
         }
         class ClientMessageRequest : IRequest, ITcpClientRequest
         {
