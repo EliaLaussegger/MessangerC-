@@ -22,11 +22,12 @@ namespace ClientNamespace
         private StreamWriter _writer;
         private readonly ClientRequestHandler _handler;
 
-        private ChatWindow chat;
+        public ChatWindow chat { get; private set; }
         public bool Connected => _client.Connected;
 
-        public TcpJsonClient(string host, int port)
+        public TcpJsonClient(string host, int port, ClientRequestHandler handler)
         {
+            _handler = handler;
             _client = new TcpClient();
             _client.Connect(host, port);
 
@@ -53,12 +54,13 @@ namespace ClientNamespace
                     switch (request)
                     {
                         case ClientMessageRequest cmr:
-                            cmr.client = this._client;
-                            cmr.Execute();
+                            cmr.client = this;
                             
+                            _handler.NotifyObservers(cmr);
                             break;
 
                     }
+
                     //Console.WriteLine("SERVER -> CLIENT: " + line);
                 }
             }
@@ -103,50 +105,51 @@ namespace ClientNamespace
         {
             this.chat = chatWindow;
         }
-        class ClientLoginRequest : IRequest, ITcpClientRequest
+        
+
+    }
+    public class ClientLoginRequest : IRequest, ITcpServerRequest
+    {
+        public TcpClient client { get; set; }
+        public Server server;
+        public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
+
+        public string json { get; set; }
+        public User user { get; protected set; }
+        public void Execute()
         {
-            public TcpClient client { get; set; }
-            public Server server;
-            public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
-
-            public string json { get; set; }
-            public User user { get; protected set; }
-            public void Execute()
-            {
-                using var doc = JsonDocument.Parse(json);
-                string username = doc.RootElement.GetProperty("username").GetString()!;
-                string password = doc.RootElement.GetProperty("password").GetString()!;
-                user = UserFunctions.LoginUser(username, password);
-                client = clientTCPConnectedRequest._clientTCP;
+            using var doc = JsonDocument.Parse(json);
+            string username = doc.RootElement.GetProperty("username").GetString()!;
+            string password = doc.RootElement.GetProperty("password").GetString()!;
+            user = UserFunctions.LoginUser(username, password);
+            client = clientTCPConnectedRequest._clientTCP;
 
 
-            }
         }
-        public class TcpJsonClientAtributes
+    }
+    public class TcpJsonClientAtributes
+    {
+        public string username { get; set; }
+        public string userId { get; set; }
+    }
+    class ClientMessageRequest : IRequest, ITcpClientRequest
+    {
+        public TcpJsonClient client { get; set; }
+        public string json { get; set; }
+        public User user { get; protected set; }
+        public Server server;
+        public void Execute()
         {
-            public string username { get; set; }
-            public string userId { get; set; }
+            using var doc = JsonDocument.Parse(json);
+            Message message = JsonSerializer.Deserialize<Message>(json)!;
+            client.chat.ReceiveMessage(message);
+            //string username = doc.RootElement.GetProperty("senderId").GetString()!;
+            //string userId = DataBaseHelper.GetUserId(username);
+            //string message = doc.RootElement.GetProperty("content").GetString()!;
+            //string receiver = doc.RootElement.GetProperty("receiverId").GetString()!;
+            //Message message1 = new Message(username, userId, message);
+            // client.chat.ReceiveMessage(message1);
+
         }
-        class ClientMessageRequest : IRequest, ITcpClientRequest
-        {
-            public TcpClient client { get; set; }
-
-            public string json { get; set; }
-            public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
-            public User user { get; protected set; }
-            public Server server;
-            public void Execute()
-            {
-                using var doc = JsonDocument.Parse(json);
-                string username = doc.RootElement.GetProperty("senderId").GetString()!;
-                string userId = DataBaseHelper.GetUserId(username);
-                string message = doc.RootElement.GetProperty("content").GetString()!;
-                string receiver = doc.RootElement.GetProperty("receiverId").GetString()!;
-                Message message1 = new Message(username, userId, message);
-               // client.chat.ReceiveMessage(message1);
-
-            }
-        }
-
     }
 }

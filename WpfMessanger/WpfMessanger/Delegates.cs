@@ -22,11 +22,15 @@ namespace Delegates
         string json { get; set; }
         void Execute();
     }
-    public interface ITcpClientRequest
+    public interface ITcpServerRequest
     {
         TcpClient client { get; set; }
         ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
     }
+    public interface ITcpClientRequest
+    {
+        TcpJsonClient client{ get; set; }
+}
     class ServerConnectClientRequest : IRequest
     {
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
@@ -37,7 +41,7 @@ namespace Delegates
             Console.WriteLine("Client Request Executed");
         }
     }
-    class ServerLoginRequest : IRequest , ITcpClientRequest
+    class ServerLoginRequest : IRequest , ITcpServerRequest
     {
         public TcpClient client { get; set; }
         public Server server;
@@ -51,10 +55,10 @@ namespace Delegates
             string username = doc.RootElement.GetProperty("username").GetString()!;
             string password = doc.RootElement.GetProperty("password").GetString()!;
             user = UserFunctions.LoginUser(username, password);
-            client = clientTCPConnectedRequest._client;
+            client = clientTCPConnectedRequest._clientTCP;
             for (int i = 0; i < server.connectedClients.Count; i++)
             {
-                if (server.connectedClients[i]._client == client)
+                if (server.connectedClients[i]._clientTCP == client)
                 {
                     server.connectedClients[i].user = user;
                     UserSerializable jsonUser = new UserSerializable
@@ -74,7 +78,7 @@ namespace Delegates
 
         }
     }
-    class ServerRegisterRequest : IRequest , ITcpClientRequest
+    class ServerRegisterRequest : IRequest , ITcpServerRequest
     {
         public TcpClient client { get; set; }
 
@@ -87,7 +91,7 @@ namespace Delegates
             user = UserFunctions.CreateUser();
         }
     }
-    class ServerMessageRequest : IRequest, ITcpClientRequest
+    class ServerMessageRequest : IRequest, ITcpServerRequest
     {
         public TcpClient client { get; set; }
 

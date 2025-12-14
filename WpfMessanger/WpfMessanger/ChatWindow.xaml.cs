@@ -56,7 +56,7 @@ namespace MessengerClient
         public void ReceiveMessage(Message message)
         {
             // Nachricht zur MessageList hinzufügen
-            this.MessageList.Items.Add(message);
+            this.MessageList.Items.Add(message.content);
         }
     }
 }

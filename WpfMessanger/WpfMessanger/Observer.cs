@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserNamespace;
 using ServerNamespace;
+using ClientNamespace;
 namespace ObserverNamespace
 {
     public interface IObserver<T> where T : IRequest
@@ -41,7 +42,7 @@ namespace ObserverNamespace
             return notifiedObservers;
         }
     }
-    class ClientConnect : Observer<ServerConnectClientRequest>, IObserver<ServerConnectClientRequest>
+    class ServerClientConnectObserver : Observer<ServerConnectClientRequest>, IObserver<ServerConnectClientRequest>
     {
         public IObserver<ServerConnectClientRequest> Update(ServerConnectClientRequest request)
         {
@@ -49,7 +50,7 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientLoginObserver : Observer<ServerLoginRequest>, IObserver<ServerLoginRequest>
+    class ServerClientLoginObserver : Observer<ServerLoginRequest>, IObserver<ServerLoginRequest>
     {
         public IObserver<ServerLoginRequest> Update(ServerLoginRequest request)
         {
@@ -59,7 +60,7 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientRegisterObserver : Observer<ServerRegisterRequest>, IObserver<ServerRegisterRequest>
+    class ServerClientRegisterObserver : Observer<ServerRegisterRequest>, IObserver<ServerRegisterRequest>
     {
 
         public IObserver<ServerRegisterRequest> Update(ServerRegisterRequest request)
@@ -69,12 +70,21 @@ namespace ObserverNamespace
             return this;
         }
     }
-    class ClientMessageObserver : Observer<Delegates.ServerMessageRequest>, IObserver<Delegates.ServerMessageRequest>
+    class ServerClientMessageObserver : Observer<Delegates.ServerMessageRequest>, IObserver<Delegates.ServerMessageRequest>
     {
         public Server server { get; set; }
         public IObserver<Delegates.ServerMessageRequest> Update(Delegates.ServerMessageRequest request)
         {
             request.server = server;
+            request.Execute();
+            this.request = request;
+            return this;
+        }
+    }
+    class ClientMessageObserver : Observer<ClientMessageRequest>, IObserver<ClientMessageRequest>
+    {
+        public IObserver<ClientMessageRequest> Update(ClientMessageRequest request)
+        {
             request.Execute();
             this.request = request;
             return this;

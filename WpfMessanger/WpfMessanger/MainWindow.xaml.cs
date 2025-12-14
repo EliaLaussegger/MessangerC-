@@ -1,6 +1,9 @@
 ﻿using ClientNamespace;
+using ClientNamespace;
 using DataBank;
+using JsonParser;
 using MessengerClient;
+using ObserverNamespace;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using JsonParser;
 using ClientNamespace;
 namespace WpfMessanger
 {
@@ -32,7 +34,10 @@ namespace WpfMessanger
         {
             string username = UsernameBox.Text;
             string password = PasswordBox.Password;
-            var client = new TcpJsonClient("192.168.178.39", 3000);
+            ClientRequestHandler handler = new ClientRequestHandler();
+ 
+            handler.RegisterObserver(new ClientMessageObserver());
+            TcpJsonClient client = new TcpJsonClient("192.168.178.47", 3000, handler);
             client.SendRequest(new LoginSendModel 
             {
                 username = username,

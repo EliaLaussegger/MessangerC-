@@ -177,7 +177,7 @@ namespace ServerNamespace
             Console.WriteLine("Server connected.");
         }
     }
-    class ServerMessageRequest : IRequest, ITcpClientRequest
+    class ServerMessageRequest : IRequest, ITcpServerRequest
     {
         public TcpClient client { get; set; }
 
