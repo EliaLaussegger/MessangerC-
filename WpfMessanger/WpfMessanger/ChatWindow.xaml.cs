@@ -61,7 +61,12 @@ namespace MessengerClient
                 return;
             }
             // Nachricht zur MessageList hinzufügen
-            this.MessageList.Items.Add(message.content);
+            ListBoxItem item = new ListBoxItem
+            {
+                Content = message.content,
+                HorizontalContentAlignment = HorizontalAlignment.Right
+            };
+            this.MessageList.Items.Add(item);
         }
     }
 }
