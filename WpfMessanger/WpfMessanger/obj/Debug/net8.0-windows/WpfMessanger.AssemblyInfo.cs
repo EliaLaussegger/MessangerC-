@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WpfMessanger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d006348c9167568c22d66c9135e50bf4a94b5304")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+213c1f5536a48a1afc133566041d296cb6ea2320")]
 [assembly: System.Reflection.AssemblyProductAttribute("WpfMessanger")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WpfMessanger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

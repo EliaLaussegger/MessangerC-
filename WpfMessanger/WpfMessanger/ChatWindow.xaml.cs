@@ -55,6 +55,11 @@ namespace MessengerClient
         }
         public void ReceiveMessage(Message message)
         {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(() => ReceiveMessage(message));
+                return;
+            }
             // Nachricht zur MessageList hinzufügen
             this.MessageList.Items.Add(message.content);
         }

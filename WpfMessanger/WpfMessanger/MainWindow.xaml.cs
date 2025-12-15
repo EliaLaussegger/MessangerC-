@@ -37,7 +37,7 @@ namespace WpfMessanger
             ClientRequestHandler handler = new ClientRequestHandler();
  
             handler.RegisterObserver(new ClientMessageObserver());
-            TcpJsonClient client = new TcpJsonClient("192.168.178.47", 3000, handler);
+            TcpJsonClient client = new TcpJsonClient("10.91.52.224", 3000, handler);
             client.SendRequest(new LoginSendModel 
             {
                 username = username,
