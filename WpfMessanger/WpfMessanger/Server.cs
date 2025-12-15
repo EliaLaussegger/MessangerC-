@@ -65,6 +65,19 @@ namespace ServerNamespace
 
             Task.Run(() => AcceptLoop());
         }
+        public void DisconnectClient(ClientTCPConnectedRequest client)
+        {
+            for (int i = 0; i < connectedClients.Count; i++)
+            {
+                if (connectedClients[i] == client)
+                {
+                    connectedClients.RemoveAt(i);
+                    Console.WriteLine("Client disconnected.");
+                    break;
+                }
+            }
+            Console.WriteLine("Server stopped.");
+        }
         private async Task AcceptLoop()
         {
             while (true)
@@ -75,6 +88,7 @@ namespace ServerNamespace
                 Console.WriteLine("Client connected via TCP.");
                 ClientTCPConnectedRequest clientTCPConnectedRequest = new ClientTCPConnectedRequest(clientTCP, _requestHandler);
                 clientTCPConnectedRequest.server = this;
+                clientTCPConnectedRequest._client.clientTCPConnectedRequest = clientTCPConnectedRequest;
                 connectedClients.Add(clientTCPConnectedRequest);
                 _threadPool.QueueWorkItem(clientTCPConnectedRequest);
             }

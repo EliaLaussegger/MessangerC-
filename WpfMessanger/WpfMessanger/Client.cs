@@ -21,7 +21,7 @@ namespace ClientNamespace
         private StreamReader _reader;
         private StreamWriter _writer;
         private readonly ClientRequestHandler _handler;
-
+        public ClientTCPConnectedRequest clientTCPConnectedRequest{ private get; set; }
         public ChatWindow chat { get; private set; }
         public bool Connected => _client.Connected;
 
