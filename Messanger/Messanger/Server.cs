@@ -1,4 +1,6 @@
-﻿using Delegates;
+﻿using ClientNamespace;
+using DataBank;
+using Delegates;
 using Microsoft.Data.Sqlite;
 using ObserverNamespace;
 using System;
@@ -12,7 +14,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
 using UserNamespace;
-using DataBank;
+using MessagesNameSpace;
 namespace ServerNamespace
 {
     public class Server
@@ -24,7 +26,7 @@ namespace ServerNamespace
         private StreamWriter _writer;
         private NetworkStream _stream;
         public List<ClientTCPConnectedRequest> connectedClients = new List<ClientTCPConnectedRequest>();
-
+        public List<TcpJsonClient> clients = new List<TcpJsonClient>();
         public Server(int workerCount, ClientRequestHandler requestHandler)
         {
             _threadPool = new ThreadPoolNamespace.ThreadPool(workerCount);
@@ -64,15 +66,30 @@ namespace ServerNamespace
 
             Task.Run(() => AcceptLoop());
         }
+        public void DisconnectClient(ClientTCPConnectedRequest client)
+        {
+            for (int i = 0; i < connectedClients.Count; i++)
+            {
+                if (connectedClients[i] == client)
+                {
+                    connectedClients.RemoveAt(i);
+                    Console.WriteLine("Client disconnected.");
+                    break;
+                }
+            }
+            Console.WriteLine("Server stopped.");
+        }
         private async Task AcceptLoop()
         {
             while (true)
             {
-                TcpClient client = await _listener!.AcceptTcpClientAsync();
-                _stream = client.GetStream();
+                TcpClient clientTCP = await _listener!.AcceptTcpClientAsync();
+                _stream = clientTCP.GetStream();
+
                 Console.WriteLine("Client connected via TCP.");
-                ClientTCPConnectedRequest clientTCPConnectedRequest = new ClientTCPConnectedRequest(client, _requestHandler);
+                ClientTCPConnectedRequest clientTCPConnectedRequest = new ClientTCPConnectedRequest(clientTCP, _requestHandler);
                 clientTCPConnectedRequest.server = this;
+                clientTCPConnectedRequest._client.clientTCPConnectedRequest = clientTCPConnectedRequest;
                 connectedClients.Add(clientTCPConnectedRequest);
                 _threadPool.QueueWorkItem(clientTCPConnectedRequest);
             }
@@ -87,7 +104,8 @@ namespace ServerNamespace
     public class ClientTCPConnectedRequest : IRequest
     {
 
-        public TcpClient _client;
+        public TcpJsonClient _client;
+        public TcpClient _clientTCP;
         private readonly ClientRequestHandler _handler;
         public Server server;
         public NetworkStream stream;
@@ -98,13 +116,13 @@ namespace ServerNamespace
 
         public ClientTCPConnectedRequest(TcpClient client, ClientRequestHandler handler)
         {
-            _client = client;
+            _clientTCP = client;
             _handler = handler;
         }
 
         public void Execute()
         {
-            stream = _client.GetStream();
+            stream = _clientTCP.GetStream();
             using var reader = new StreamReader(stream, Encoding.UTF8);
             streamWriter = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
 
@@ -117,18 +135,18 @@ namespace ServerNamespace
 
                 switch (request)
                 {
-                    case ClientLoginRequest clr:
+                    case ServerLoginRequest clr:
                         clr.clientTCPConnectedRequest = this;
                         clr.server = server;
                         _handler.NotifyObservers(clr);
                         break;
-                    case ClientRegisterRequest crr:
+                    case ServerRegisterRequest crr:
                         _handler.NotifyObservers(crr);
                         break;
-                    case ClientConnectRequest ccr:
+                    case ServerConnectClientRequest ccr:
                         _handler.NotifyObservers(ccr);
                         break;
-                    case ClientMessageRequest cmr:
+                    case Delegates.ServerMessageRequest cmr:
                         cmr.clientTCPConnectedRequest = this;
                         _handler.NotifyObservers(cmr);
                         ServerMessageRequest serverMessageRequest = new ServerMessageRequest();
@@ -151,10 +169,10 @@ namespace ServerNamespace
 
             IRequest? request = type switch
             {
-                "login" => JsonSerializer.Deserialize<ClientLoginRequest>(json),
-                "register" => JsonSerializer.Deserialize<ClientRegisterRequest>(json),
-                "connect" => JsonSerializer.Deserialize<ClientConnectRequest>(json),
-                "message" => JsonSerializer.Deserialize<ClientMessageRequest>(json),
+                "login" => JsonSerializer.Deserialize<ServerLoginRequest>(json),
+                "register" => JsonSerializer.Deserialize<ServerRegisterRequest>(json),
+                "connect" => JsonSerializer.Deserialize<ServerConnectClientRequest>(json),
+                "message" => JsonSerializer.Deserialize<Delegates.ServerMessageRequest>(json),
                 _ => null
             };
 
@@ -174,13 +192,13 @@ namespace ServerNamespace
             Console.WriteLine("Server connected.");
         }
     }
-    class ServerMessageRequest : IRequest, ITcpClientRequest
+    class ServerMessageRequest : IRequest, ITcpServerRequest
     {
         public TcpClient client { get; set; }
 
         public string json { get; set; }
         public ClientTCPConnectedRequest clientTCPConnectedRequest { get; set; }
-        public ClientMessageRequest clientMessageRequest { get; set; }
+        public Delegates.ServerMessageRequest clientMessageRequest { get; set; }
         public void Execute()
         {
 
@@ -196,6 +214,8 @@ namespace ServerNamespace
                     {
                         ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
                         targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                        Message message = JsonSerializer.Deserialize<Message>(clientMessageRequest.json)!;
+                        MessageDataBase messageDataBase = new MessageDataBase(message);
                     }
 
 
@@ -216,5 +236,5 @@ namespace ServerNamespace
             }
         }
     }
-    
+
 }

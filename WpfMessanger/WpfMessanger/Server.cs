@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ThreadPoolNamespace;
 using UserNamespace;
+using MessagesNameSpace;
 namespace ServerNamespace
 {
     public class Server
@@ -88,7 +89,8 @@ namespace ServerNamespace
                 Console.WriteLine("Client connected via TCP.");
                 ClientTCPConnectedRequest clientTCPConnectedRequest = new ClientTCPConnectedRequest(clientTCP, _requestHandler);
                 clientTCPConnectedRequest.server = this;
-                clientTCPConnectedRequest._client.clientTCPConnectedRequest = clientTCPConnectedRequest;
+                if (clientTCPConnectedRequest._client != null)
+                    clientTCPConnectedRequest._client.clientTCPConnectedRequest = clientTCPConnectedRequest;
                 connectedClients.Add(clientTCPConnectedRequest);
                 _threadPool.QueueWorkItem(clientTCPConnectedRequest);
             }
@@ -213,6 +215,8 @@ namespace ServerNamespace
                     {
                         ClientTCPConnectedRequest targetClient = clientTCPConnectedRequest.server.connectedClients[i];
                         targetClient.streamWriter.WriteLine(clientMessageRequest.json);
+                        Message message = JsonSerializer.Deserialize<Message>(clientMessageRequest.json)!;
+                        MessageDataBase messageDataBase = new MessageDataBase(message);
                     }
 
 
