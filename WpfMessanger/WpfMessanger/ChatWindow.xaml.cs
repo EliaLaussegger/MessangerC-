@@ -1,4 +1,8 @@
 ﻿using ClientNamespace;
+using DataBank;
+using JsonParser;
+using MessagesNameSpace;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using JsonParser;
-using MessagesNameSpace;
+using DataBank;
 namespace MessengerClient
 {
     /// <summary>
@@ -35,6 +38,18 @@ namespace MessengerClient
         {
             this.username = username;
             this.client = client;
+            SqliteConnection connection =  DataBaseHelper.GetUserConnection(username);
+            List<Message> messages = DataBaseHelper.GetMessageObject(connection);
+            foreach (var message in messages)
+            {
+                ListBoxItem item = new ListBoxItem
+                {
+                    Content = message.content,
+                    HorizontalContentAlignment = message.senderId == username ? HorizontalAlignment.Left : HorizontalAlignment.Right
+                };
+                this.MessageList.Items.Add(item);
+            }
+
         }
 
         private void SendMessage_Click(object sender, RoutedEventArgs e)

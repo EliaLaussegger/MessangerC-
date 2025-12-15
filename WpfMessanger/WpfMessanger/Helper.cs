@@ -22,5 +22,22 @@ namespace Helper
             }
             return folderPath;
         }
+        public static string GetCurrentDirectory()
+        {
+            return Directory.GetCurrentDirectory();
+        }
+        public static string FindPathUserId(string userId)
+        {
+            string basePath = "C:\\Users\\elial\\source\\repos\\MessangerC-\\Messanger\\ClientsDB\\";
+            string[] directories = Directory.GetDirectories(basePath);
+            foreach (string dir in directories)
+            {
+                if (dir.EndsWith(userId))
+                {
+                    return dir;
+                }
+            }
+            return null;
+        }
     }
 }

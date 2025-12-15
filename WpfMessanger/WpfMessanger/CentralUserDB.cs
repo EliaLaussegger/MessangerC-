@@ -189,6 +189,76 @@ namespace DataBank
                 return null;
             }
         }
+        public static SqliteConnection GetUserConnection(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new InvalidOperationException($"User not found: {username}");
+
+            string userDir = HelperClass.FindPathUserId(username);
+            if (string.IsNullOrEmpty(userDir))
+                throw new FileNotFoundException($"User folder not found for userId={username}");
+
+            string dbPath = Path.Combine(userDir, "messages", $"{username}messagedata.db");
+            string? dir = Path.GetDirectoryName(dbPath);
+            if (string.IsNullOrEmpty(dir))
+                throw new InvalidOperationException($"Cannot determine directory for dbPath={dbPath}");
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            var csb = new SqliteConnectionStringBuilder
+            {
+                DataSource = dbPath,
+                Mode = SqliteOpenMode.ReadWriteCreate,
+                Cache = SqliteCacheMode.Shared
+            };
+            var userConnection = new SqliteConnection(csb.ToString());
+            userConnection.Open();
+            return userConnection;
+        }
+        public static SqliteConnection GetUserConnectionById(string userId)
+        {
+            string dbPath = HelperClass.FindPathUserId(userId);
+            var userConnection = new SqliteConnection($"Data Source={dbPath}");
+            userConnection.Open();
+            return userConnection;
+        }
+        public static List<Message> GetMessageObject(SqliteConnection connection)
+        {
+    var messages = new List<Message>();
+
+    // Sicherstellen, dass die Tabelle existiert, bevor wir SELECT ausführen
+    using (var createCmd = new SqliteCommand(@"
+        CREATE TABLE IF NOT EXISTS Messages(
+            MessageId INTEGER PRIMARY KEY AUTOINCREMENT,
+            SenderId TEXT NOT NULL,
+            ReceiverId TEXT NOT NULL,
+            Content TEXT NOT NULL,
+            Timestamp TEXT NOT NULL
+        );", connection))
+    {
+        createCmd.ExecuteNonQuery();
+    }
+
+    using var cmd = new SqliteCommand(
+        "SELECT SenderId, ReceiverId, Content, Timestamp FROM Messages ORDER BY Timestamp",
+        connection
+    );
+
+    using var reader = cmd.ExecuteReader();
+    while (reader.Read())
+    {
+        Message message = new Message
+        (
+            reader.GetString(0),
+            reader.GetString(1),
+            reader.GetString(2)
+        );
+        message.timestamp = DateTime.Parse(reader.GetString(3));
+        messages.Add(message);
+    }
+
+    return messages;
+        }
         public static string GetUserId(string username)
         {
             using var idCmd = new SqliteCommand(
@@ -288,6 +358,19 @@ namespace DataBank
             Timestamp TEXT NOT NULL
             );", connection);
             cmd.ExecuteNonQuery();
+            AddMessageToDB();
+        }
+        public void AddMessageToDB()
+        {
+            using var insertCmd = new SqliteCommand(
+                "INSERT INTO Messages (SenderId, ReceiverId, Content, Timestamp) VALUES (@s, @r, @c, @t)",
+                connection
+            );
+            insertCmd.Parameters.AddWithValue("@s", senderId);
+            insertCmd.Parameters.AddWithValue("@r", receiverId);
+            insertCmd.Parameters.AddWithValue("@c", content);
+            insertCmd.Parameters.AddWithValue("@t", Timestamp.ToString("o"));
+            insertCmd.ExecuteNonQuery();
         }
     }
 }
